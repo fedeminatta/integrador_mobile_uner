@@ -41,3 +41,17 @@ example
 # generated native folders
 /ios
 /android
+
+# logs
+*.log
+
+# editores / IDE
+.vscode/
+.idea/
+*.code-workspace
+*.swp
+
+# material de la cátedra y archivos sueltos (no son parte de la app)
+/*.pdf
+/logotipo
+/base-de-datos.drawio
