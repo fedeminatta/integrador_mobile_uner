@@ -38,6 +38,9 @@ Ver datos de la api
 2- en el .env crear EXPO_PUBLIC_API_URL=http://(tu ip):3000
 3- testear abriendo en el celular la url/salud ej : http://192.168.18.112:3000/salud .Deberia devolver el estado:ok
 
+Leer doc de la api (teniendola levantada)
+1- Abrir en el navedaor url/docs
+
 Otros recursos:
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
