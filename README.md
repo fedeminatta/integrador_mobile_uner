@@ -12,6 +12,26 @@
    npx expo start
    ```
 
+## Configurar api en local con Docker
+
+1- https://github.com/franco-ruisdias-uner/api-proyectos-mobile.git
+2- cd api-proyectos-mobile
+3- git sparse-checkout set api-transporte-publico
+
+## Comandos Docker
+
+Levantar Docker (dentro de la carpeta de la api)
+
+```bash
+  docker compose up -d
+```
+
+Ver datos de la api
+
+```bash
+  Invoke-RestMethod http://localhost:3000/lineas
+```
+
 Otros recursos:
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
