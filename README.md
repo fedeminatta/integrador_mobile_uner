@@ -32,6 +32,12 @@ Ver datos de la api
   Invoke-RestMethod http://localhost:3000/lineas
 ```
 
+## Crear .env
+
+1- Abrir una terminal y ejecutar `ipconfig` , copiar de Adaptador de Ethernet el ipv4
+2- en el .env crear EXPO_PUBLIC_API_URL=http://(tu ip):3000
+3- testear abriendo en el celular la url/salud ej : http://192.168.18.112:3000/salud .Deberia devolver el estado:ok
+
 Otros recursos:
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
