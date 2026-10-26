@@ -1,18 +1,31 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import {
+  Rubik_400Regular,
+  Rubik_500Medium,
+  Rubik_600SemiBold,
+  Rubik_700Bold,
+  useFonts,
+} from '@expo-google-fonts/rubik';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { useEffect } from 'react';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import { NavegacionCajon } from '@/componentes/Navegacion/NavegacionCajon';
+import { RaizApp } from '@/componentes/Navegacion/RaizApp';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function Layout() {
+  const [fuentesListas, errorFuentes] = useFonts({ Rubik_400Regular, Rubik_500Medium, Rubik_600SemiBold, Rubik_700Bold });
+  const listo = fuentesListas || !!errorFuentes;
+
+  useEffect(() => {
+    if (listo) SplashScreen.hideAsync();
+  }, [listo]);
+
+  if (!listo) return null;
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <RaizApp>
+      <NavegacionCajon />
+    </RaizApp>
   );
 }
