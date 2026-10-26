@@ -1,0 +1,145 @@
+BASE DE DATOS - PARAN (sqlite local)
+========================================
+
+15 tablas
+
+PK = clave primaria   FK = clave foranea   null = puede quedar vacio
+
+TABLA lineas
+----------------------------------------
+  id         TEXT     PK
+  numero     TEXT
+  nombre     TEXT
+  color      TEXT
+  activa     INTEGER
+  empresaId  TEXT     FK -> empresas
+
+TABLA recorridos
+----------------------------------------
+  id       TEXT     PK
+  lineaId  TEXT     FK -> lineas
+  sentido  TEXT
+  destino  TEXT
+  trazado  TEXT
+
+TABLA recorrido_paradas
+----------------------------------------
+  recorridoId  TEXT     FK -> recorridos
+  paradaId     TEXT     FK -> paradas
+  orden        INTEGER
+  PK compuesta: recorridoId, orden
+
+TABLA paradas
+----------------------------------------
+  id        TEXT     PK
+  nombre    TEXT
+  latitud   REAL
+  longitud  REAL
+  sentido   TEXT
+  refugio   INTEGER
+  codigoQr  TEXT     null
+
+TABLA horarios
+----------------------------------------
+  id         TEXT     PK
+  lineaId    TEXT     FK -> lineas
+  paradaId   TEXT     FK -> paradas
+  sentido    TEXT
+  tipoDeDia  TEXT
+  hora       TEXT
+
+TABLA frecuencias
+----------------------------------------
+  id           TEXT     PK
+  lineaId      TEXT     FK -> lineas
+  sentido      TEXT
+  tipoDeDia    TEXT
+  desde        TEXT
+  hasta        TEXT
+  cadaMinutos  INTEGER
+
+TABLA empresas
+----------------------------------------
+  id      TEXT     PK
+  nombre  TEXT
+
+TABLA calles
+----------------------------------------
+  id      TEXT     PK
+  nombre  TEXT
+
+TABLA avisos
+----------------------------------------
+  id                  TEXT     PK
+  titulo              TEXT
+  detalle             TEXT
+  desde               TEXT
+  hasta               TEXT     null
+  gravedad            TEXT
+  trazadoAlternativo  TEXT     null
+  videoUrl            TEXT     null
+
+TABLA aviso_lineas
+----------------------------------------
+  avisoId  TEXT     FK -> avisos
+  lineaId  TEXT     FK -> lineas
+  PK compuesta: avisoId, lineaId
+
+TABLA usuario
+----------------------------------------
+  id             TEXT     PK
+  nombre         TEXT
+  email          TEXT
+  avisosActivos  INTEGER
+  tema           TEXT
+  creadoEn       TEXT
+
+TABLA lineas_favoritas
+----------------------------------------
+  usuarioId  TEXT     FK -> usuario
+  lineaId    TEXT     FK -> lineas
+  PK compuesta: usuarioId, lineaId
+
+TABLA paradas_favoritas
+----------------------------------------
+  usuarioId  TEXT     FK -> usuario
+  paradaId   TEXT     FK -> paradas
+  PK compuesta: usuarioId, paradaId
+
+TABLA reportes
+----------------------------------------
+  id              TEXT     PK
+  lineaId         TEXT     FK -> lineas
+  paradaId        TEXT     FK -> paradas
+  usuarioId       TEXT     FK -> usuario
+  motivo          TEXT     FK -> motivos_demora
+  comentario      TEXT     null
+  fotoUri         TEXT     null
+  confirmaciones  INTEGER
+  fechaHora       TEXT
+  sincronizado    INTEGER
+
+TABLA motivos_demora
+----------------------------------------
+  id        TEXT     PK
+  etiqueta  TEXT
+
+RELACIONES (una a muchas)
+----------------------------------------
+  empresas (1) -> lineas (N)   por lineas.empresaId
+  lineas (1) -> recorridos (N)   por recorridos.lineaId
+  recorridos (1) -> recorrido_paradas (N)   por recorrido_paradas.recorridoId
+  paradas (1) -> recorrido_paradas (N)   por recorrido_paradas.paradaId
+  lineas (1) -> horarios (N)   por horarios.lineaId
+  paradas (1) -> horarios (N)   por horarios.paradaId
+  lineas (1) -> frecuencias (N)   por frecuencias.lineaId
+  avisos (1) -> aviso_lineas (N)   por aviso_lineas.avisoId
+  lineas (1) -> aviso_lineas (N)   por aviso_lineas.lineaId
+  usuario (1) -> lineas_favoritas (N)   por lineas_favoritas.usuarioId
+  lineas (1) -> lineas_favoritas (N)   por lineas_favoritas.lineaId
+  usuario (1) -> paradas_favoritas (N)   por paradas_favoritas.usuarioId
+  paradas (1) -> paradas_favoritas (N)   por paradas_favoritas.paradaId
+  lineas (1) -> reportes (N)   por reportes.lineaId
+  paradas (1) -> reportes (N)   por reportes.paradaId
+  usuario (1) -> reportes (N)   por reportes.usuarioId
+  motivos_demora (1) -> reportes (N)   por reportes.motivo
