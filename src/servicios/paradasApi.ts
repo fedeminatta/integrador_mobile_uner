@@ -7,7 +7,7 @@ export type Resultado<T> = RespuestaUno<T> | RespuestaError;
 
 type OpcionesPedido = NonNullable<Parameters<typeof pedir>[1]>;
 
-/** pedir() lanza ErrorDeApi en vez de devolver `{ error }`. */
+/** pedir() lanza ErrorDeApi en vez de devolver { error } */
 async function pedirSobre<T>(ruta: string, opciones: OpcionesPedido = {}): Promise<Resultado<T>> {
   try {
     const r = await pedir<T>(ruta, opciones);
@@ -22,17 +22,17 @@ async function pedirSobre<T>(ruta: string, opciones: OpcionesPedido = {}): Promi
   }
 }
 
-/** {codigo} 200 { datos: Parada, meta: null }. Errores: PARADA_NO_ENCONTRADA. */
+
 export function paradaPorQr(codigo: string): Promise<Resultado<Parada>> {
   return pedirSobre<Parada>(`/paradas/qr/${encodeURIComponent(codigo)}`);
 }
 
-/** GET /paradas?porPagina=100 → las 73 de una. */
+
 export function listarParadasReales(): Promise<Resultado<Parada[]>> {
   return pedirSobre<Parada[]>('/paradas?porPagina=100');
 }
 
-/** GET /lineas?porPagina=100 → para mapear lin-05 → "5". */
+
 export function listarLineasReales(): Promise<Resultado<Linea[]>> {
   return pedirSobre<Linea[]>('/lineas?porPagina=100');
 }
