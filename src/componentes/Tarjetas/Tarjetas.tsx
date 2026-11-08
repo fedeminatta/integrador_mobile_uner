@@ -4,10 +4,11 @@ import { InsigniaLinea } from '@/componentes/InsigniaLinea/InsigniaLinea';
 import { Tarjeta } from '@/componentes/Tarjeta/Tarjeta';
 import { crearEstilos } from '@/componentes/Tarjetas/Tarjetas.estilos';
 import { Texto } from '@/componentes/Texto/Texto';
-import { ParadaConLineas } from '@/servicios/paradas';
+import { ParadaVista } from '@/servicios/paradasApi';
 import { useEstilos } from '@/tema';
 import { Aviso, EstadoLinea, Linea, ProximoHorario } from '@/tipos';
 import { rangoDeFechas } from '@/utils/fechas';
+import { formatoDistancia } from '@/utils/distancia';
 
 export function TarjetaHorario({ horario }: { horario: ProximoHorario }) {
   const e = useEstilos(crearEstilos);
@@ -51,13 +52,16 @@ export function TarjetaLinea({ linea }: { linea: Linea }) {
   );
 }
 
-export function TarjetaParada({ parada }: { parada: ParadaConLineas }) {
+export function TarjetaParada({ parada, seleccionada }: { parada: ParadaVista; seleccionada?: boolean }) {
   const e = useEstilos(crearEstilos);
   return (
     <Tarjeta>
       <View style={e.cabeceraTextos}>
         <Texto variante="destacado">{parada.nombre}</Texto>
-        {!!parada.referencia && <Texto variante="chico">{parada.referencia}</Texto>}
+        {parada.distancia != null && (
+          <Texto variante="etiqueta">{formatoDistancia(parada.distancia)}</Texto>
+        )}
+        {seleccionada && <Texto variante="etiqueta">Seleccionada en el mapa</Texto>}
         <View style={e.insignias}>
           {parada.numerosLinea.map((n) => (
             <InsigniaLinea key={n} numero={n} chica />
