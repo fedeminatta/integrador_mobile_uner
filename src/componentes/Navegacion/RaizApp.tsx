@@ -5,9 +5,10 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { estilos } from '@/componentes/Navegacion/RaizApp.estilos';
 import { ProveedorPreferencias } from '@/hooks/usePreferencias';
-import { ProveedorSesion } from '@/hooks/useSesion';
+import { ProveedorSesion, useSesion } from '@/hooks/useSesion';
 import { useTema } from '@/tema';
 import { temaDeNavegacion } from '@/tema/navegacion';
+import { Desbloqueo } from '@/componentes/Desbloqueo/Desbloqueo';
 
 function TemaNavegacion({ children }: { children: ReactNode }) {
   const tema = useTema();
@@ -21,12 +22,21 @@ function TemaNavegacion({ children }: { children: ReactNode }) {
   );
 }
 
+/** Muestra la app; mientras la sesión esta bloqueada */
+function Contenido({ children }: { children: ReactNode }) {
+  const { bloqueado } = useSesion();
+  if (bloqueado) return <Desbloqueo />;
+  return <>{children}</>;
+}
+
 export function RaizApp({ children }: { children: ReactNode }) {
   return (
-    <GestureHandlerRootView style={estilos.raiz}>
+     <GestureHandlerRootView style={estilos.raiz}>
       <ProveedorPreferencias>
         <ProveedorSesion>
-          <TemaNavegacion>{children}</TemaNavegacion>
+          <TemaNavegacion>
+            <Contenido>{children}</Contenido>
+          </TemaNavegacion>
         </ProveedorSesion>
       </ProveedorPreferencias>
     </GestureHandlerRootView>
