@@ -35,7 +35,26 @@
         }
       ],
       "expo-secure-store",
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Usamos Face ID para desbloquear tu sesion"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Usamos la camara oara escanear el QR de las paradas y sacar fotos a tus reportes",
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Usamos tu ubicacion para mostrarte las paradas y lineas mas cercanas"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
