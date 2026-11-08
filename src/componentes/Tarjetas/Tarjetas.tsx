@@ -5,10 +5,12 @@ import { Tarjeta } from '@/componentes/Tarjeta/Tarjeta';
 import { crearEstilos } from '@/componentes/Tarjetas/Tarjetas.estilos';
 import { Texto } from '@/componentes/Texto/Texto';
 import { ParadaVista } from '@/servicios/paradasApi';
+import { AvisoVista } from '@/servicios/avisosApi';
 import { useEstilos } from '@/tema';
-import { Aviso, EstadoLinea, Linea, ProximoHorario } from '@/tipos';
+import { EstadoLinea, Linea, ProximoHorario } from '@/tipos';
 import { rangoDeFechas } from '@/utils/fechas';
 import { formatoDistancia } from '@/utils/distancia';
+
 
 export function TarjetaHorario({ horario }: { horario: ProximoHorario }) {
   const e = useEstilos(crearEstilos);
@@ -72,12 +74,16 @@ export function TarjetaParada({ parada, seleccionada }: { parada: ParadaVista; s
   );
 }
 
-export function TarjetaAviso({ aviso }: { aviso: Aviso }) {
+export function TarjetaAviso({ aviso }: { aviso: AvisoVista }) {
   const e = useEstilos(crearEstilos);
   return (
     <Tarjeta>
       <View style={e.cabecera}>
-        {aviso.numeroLinea && <InsigniaLinea numero={aviso.numeroLinea} chica />}
+        <View style={e.insignias}>
+          {aviso.numerosLinea.map((n) => (
+            <InsigniaLinea key={n} numero={n} chica />
+          ))}
+        </View>
         <View style={e.cabeceraTextos}>
           <Texto variante="destacado">{aviso.titulo}</Texto>
         </View>
