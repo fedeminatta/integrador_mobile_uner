@@ -15,6 +15,8 @@ import { listarLineasReales, listarParadasReales, ParadaVista } from '@/servicio
 import { ErrorApi } from '@/tipos';
 import type { Coordenadas } from '@/tipos/types';
 import { metrosEntre } from '@/utils/distancia';
+import { FlechaRumbo } from '@/componentes/FlechaRumbo/FlechaRumbo';
+import { View } from 'react-native';
 
 export default function Paradas() {
   const { estados, pedir, abrirAjustes } = usePermisos();
@@ -58,7 +60,7 @@ export default function Paradas() {
         if (!vivo) return;
         setUbicacion({ latitud: loc.coords.latitude, longitud: loc.coords.longitude });
       } catch {
-        // Servicios de ubicación apagados: seguimos sin distancia.
+        
       }
     })();
     return () => {
@@ -159,6 +161,15 @@ export default function Paradas() {
           />
         )}
       </Seccion>
+      <View style={{ marginTop: 20 }}>
+        <FlechaRumbo
+          latUsuario={-31.7333}
+          lonUsuario={-60.5241}
+          latParada={-31.7321}
+          lonParada={-60.5229}
+        />
+      </View>
     </Pantalla>
+    
   );
 }
