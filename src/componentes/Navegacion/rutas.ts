@@ -33,7 +33,17 @@ export const rutaAjustes: Ruta = {
   iconoActivo: 'settings',
 };
 
-const todas = [...rutasPrincipales, ...rutasCuenta, rutaAjustes];
+// Lector de QR: se llega desde el botón del encabezado, no del menú.
+export const rutaEscanear: Ruta = {
+  nombre: 'escanear',
+  href: '/escanear',
+  ruta: '/escanear',
+  titulo: 'Escanear QR',
+  icono: 'qr-code-outline',
+  iconoActivo: 'qr-code',
+};
+
+const todas = [...rutasPrincipales, ...rutasCuenta, rutaAjustes, rutaEscanear];
 
 export function tituloDeRuta(pathname: string): string {
   return todas.find((r) => r.ruta === pathname)?.titulo ?? 'Paran';
