@@ -7,7 +7,7 @@ export function validarCorreo(correo: string): string | null {
   return null;
 }
 
-export const LARGO_MINIMO_CONTRASENA = 6;
+export const LARGO_MINIMO_CONTRASENA = 8;
 
 export function validarContrasenaNueva(contrasena: string): string | null {
   if (!contrasena) return 'Elige una contraseña.';

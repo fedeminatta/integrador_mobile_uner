@@ -1,39 +1,50 @@
-import { usuariosMock } from '@/mocks/datos';
-import { fallar, responder } from '@/servicios/simulador';
-import { Respuesta, Sesion, Usuario } from '@/tipos';
+import { ErrorDeApi, pedir } from '@/servicios/api';
+import type { RespuestaError, RespuestaUno, Sesion } from '@/tipos/api';
+import type { Usuario } from '@/tipos/types';
 
-const PREFIJO_TOKEN = 'token-simulado-';
+/** Lo que esperan las pantallas: el  éxito o el de error de la API. */
+export type Resultado<T> = RespuestaUno<T> | RespuestaError;
 
-function crearSesion(usuario: Usuario): Sesion {
-  return { token: PREFIJO_TOKEN + usuario.id, usuario };
+type OpcionesPedido = NonNullable<Parameters<typeof pedir>[1]>;
+
+/**
+ * `pedir()` lanza `ErrorDeApi` en vez de devolver `{ error }`.
+ */
+async function pedirSobre<T>(ruta: string, opciones: OpcionesPedido = {}): Promise<Resultado<T>> {
+  try {
+    const r = await pedir<T>(ruta, opciones);
+    return { datos: r.datos, meta: null };
+  } catch (e) {
+    if (e instanceof ErrorDeApi) {
+      return { error: { codigo: e.codigo, mensaje: e.message } };
+    }
+    return {
+      error: { codigo: 'ERROR_DESCONOCIDO', mensaje: 'Algo salió mal. Probá de nuevo en un rato.' },
+    };
+  }
 }
 
-export function iniciarSesion(correo: string, contrasena: string): Promise<Respuesta<Sesion>> {
-  const encontrado = usuariosMock.find(
-    (u) => u.correo.toLowerCase() === correo.trim().toLowerCase() && u.contrasena === contrasena,
-  );
-  if (!encontrado) {
-    return fallar({ codigo: 'CREDENCIALES_INVALIDAS', mensaje: 'El correo o la contraseña no coinciden. Revísalos y prueba de nuevo.' });
-  }
-  const { contrasena: _omitida, ...usuario } = encontrado;
-  return responder(crearSesion(usuario));
+/** POST /auth/ingreso 200 { datos: { token, usuario } }. Errores: CREDENCIALES_INVALIDAS (401). */
+export function iniciarSesion(correo: string, contrasena: string): Promise<Resultado<Sesion>> {
+  return pedirSobre<Sesion>('/auth/ingreso', {
+    metodo: 'POST',
+    cuerpo: { email: correo.trim(), contrasena },
+  });
 }
 
-export function registrar(nombre: string, correo: string, contrasena: string): Promise<Respuesta<Sesion>> {
-  const correoNormal = correo.trim().toLowerCase();
-  if (usuariosMock.some((u) => u.correo === correoNormal)) {
-    return fallar({ codigo: 'CORREO_EN_USO', mensaje: 'Ya hay una cuenta con ese correo. Inicia sesión o usa otro correo.' });
-  }
-  const usuario: Usuario = { id: `u${usuariosMock.length + 1}`, nombre: nombre.trim(), correo: correoNormal };
-  usuariosMock.push({ ...usuario, contrasena });
-  return responder(crearSesion(usuario));
+/** POST /auth/registro 201 { datos: { token, usuario } }. Contraseña mínima 8. Errores: EMAIL_YA_REGISTRADO (409). */
+export function registrar(
+  nombre: string,
+  correo: string,
+  contrasena: string,
+): Promise<Resultado<Sesion>> {
+  return pedirSobre<Sesion>('/auth/registro', {
+    metodo: 'POST',
+    cuerpo: { nombre: nombre.trim(), email: correo.trim(), contrasena },
+  });
 }
 
-export function usuarioDelToken(token: string): Promise<Respuesta<Usuario>> {
-  const encontrado = usuariosMock.find((u) => PREFIJO_TOKEN + u.id === token);
-  if (!encontrado) {
-    return fallar({ codigo: 'SESION_VENCIDA', mensaje: 'Tu sesión venció. Vuelve a iniciar sesión.' });
-  }
-  const { contrasena: _omitida, ...usuario } = encontrado;
-  return responder(usuario);
+/** GET /yo con Bearer { datos: Usuario, meta: null }. Token vencido: 401 NO_AUTENTICADO. */
+export function usuarioDelToken(token: string): Promise<Resultado<Usuario>> {
+  return pedirSobre<Usuario>('/yo', { token });
 }
