@@ -7,7 +7,7 @@ import { Cargando } from '@/componentes/Cargando/Cargando';
 import { Icono, NombreIcono } from '@/componentes/Icono/Icono';
 import { Logo } from '@/componentes/Logo/Logo';
 import { crearEstilos } from '@/componentes/Navegacion/MenuLateral.estilos';
-import { Ruta, rutaAjustes, rutasCuenta, rutasPrincipales } from '@/componentes/Navegacion/rutas';
+import { Ruta, rutaAjustes, rutasCuenta, rutasPersonales, rutasPrincipales } from '@/componentes/Navegacion/rutas';
 import { Texto } from '@/componentes/Texto/Texto';
 import { useHaptica } from '@/hooks/useHaptica';
 import { useSesion } from '@/hooks/useSesion';
@@ -92,6 +92,7 @@ export function MenuLateral({ navigation }: DrawerContentComponentProps) {
           <View style={e.tituloGrupo}>
             <Texto variante="etiqueta">Cuenta</Texto>
           </View>
+          {rutasPersonales.map(item)}
           {usuario ? <ItemMenu titulo="Cerrar sesión" icono="log-out-outline" onPress={cerrarSesion} /> : rutasCuenta.map(item)}
           {item(rutaAjustes)}
         </View>

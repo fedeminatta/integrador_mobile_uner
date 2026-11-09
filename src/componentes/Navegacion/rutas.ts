@@ -24,6 +24,12 @@ export const rutasCuenta: Ruta[] = [
   { nombre: 'registro', href: '/registro', ruta: '/registro', titulo: 'Crear cuenta', icono: 'person-add-outline', iconoActivo: 'person-add' },
 ];
 
+// Están dentro de (detalle): tienen su propio encabezado con la flecha para volver.
+export const rutasPersonales: Ruta[] = [
+  { nombre: 'yo', href: '/yo', ruta: '/yo', titulo: 'Yo', icono: 'person-circle-outline', iconoActivo: 'person-circle' },
+  { nombre: 'favoritos', href: '/favoritos', ruta: '/favoritos', titulo: 'Favoritos', icono: 'star-outline', iconoActivo: 'star' },
+];
+
 export const rutaAjustes: Ruta = {
   nombre: 'ajustes',
   href: '/ajustes',
