@@ -13,6 +13,8 @@ export function NavegacionCajon() {
   return (
     <Drawer
       drawerContent={(props) => <MenuLateral {...props} />}
+      // Volver desde un detalle regresa a la pantalla anterior, no siempre al inicio.
+      backBehavior="history"
       screenOptions={{
         header: (props) => <Encabezado {...props} />,
         drawerPosition: 'left',
@@ -21,6 +23,8 @@ export function NavegacionCajon() {
         overlayColor: colores.velo,
       }}>
       <Drawer.Screen name="(tabs)" />
+      {/* Los detalles traen su propio encabezado con la flecha para volver. */}
+      <Drawer.Screen name="(detalle)" options={{ headerShown: false, swipeEnabled: false }} />
       {[...rutasCuenta, rutaAjustes].map((r) => (
         // El login tiene su propio panel con el logo grande (Portada) en lugar del encabezado.
         <Drawer.Screen key={r.nombre} name={r.nombre} options={{ title: r.titulo, headerShown: r.nombre !== 'login' }} />

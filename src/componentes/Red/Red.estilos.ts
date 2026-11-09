@@ -1,0 +1,74 @@
+import { StyleSheet } from 'react-native';
+
+import { alturaControl, espacio, fuentes, radio, tamanos, Tema } from '@/tema';
+
+export const crearEstilos = ({ colores }: Tema) =>
+  StyleSheet.create({
+    textos: { flex: 1, minWidth: 0, gap: 2, marginLeft: espacio.m },
+    textosSinMargen: { flex: 1, minWidth: 0, gap: 2 },
+    fila: { flexDirection: 'row', alignItems: 'center', gap: espacio.m },
+    chevron: { marginLeft: espacio.s },
+    chip: {
+      alignSelf: 'flex-start',
+      paddingHorizontal: espacio.s + 2,
+      paddingVertical: 3,
+      borderRadius: radio.pildora,
+      marginTop: espacio.xs,
+    },
+    chipTexto: { fontFamily: fuentes.seminegrita, fontSize: tamanos.etiqueta },
+    chipNormal: { backgroundColor: colores.fondoExito },
+    chipTextoNormal: { color: colores.exito },
+    chipDesvio: { backgroundColor: colores.insignia },
+    chipTextoDesvio: { color: colores.sobreInsignia },
+    chipSuspension: { backgroundColor: colores.fondoError },
+    chipTextoSuspension: { color: colores.error },
+    chipInfo: { backgroundColor: colores.superficieTenue },
+    chipTextoInfo: { color: colores.enlace },
+    // Número de orden de la parada en el recorrido.
+    orden: {
+      width: 30,
+      height: 30,
+      borderRadius: 15,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colores.superficieTenue,
+    },
+    ordenTexto: { fontFamily: fuentes.negrita, fontSize: tamanos.chico, color: colores.enlace },
+    segmentos: {
+      flexDirection: 'row',
+      padding: espacio.xs,
+      gap: espacio.xs,
+      borderRadius: radio.campo,
+      backgroundColor: colores.superficieTenue,
+    },
+    segmento: {
+      flex: 1,
+      minHeight: alturaControl - 8,
+      paddingHorizontal: espacio.s,
+      borderRadius: radio.campo - 4,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    segmentoActivo: { backgroundColor: colores.primario },
+    segmentoTexto: { fontFamily: fuentes.seminegrita, fontSize: tamanos.chico, color: colores.texto, textAlign: 'center' },
+    segmentoTextoActivo: { color: colores.sobrePrimario },
+    botonIcono: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'rgba(4, 41, 90, 0.08)',
+    },
+    presionado: { opacity: 0.6 },
+    horas: { flexDirection: 'row', flexWrap: 'wrap', gap: espacio.s },
+    hora: {
+      minWidth: 64,
+      paddingVertical: espacio.s,
+      paddingHorizontal: espacio.m,
+      borderRadius: radio.insignia,
+      backgroundColor: colores.superficieTenue,
+      alignItems: 'center',
+    },
+    horaTexto: { fontFamily: fuentes.seminegrita, fontSize: tamanos.cuerpo, color: colores.texto, fontVariant: ['tabular-nums'] },
+  });
