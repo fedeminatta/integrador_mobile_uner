@@ -11,7 +11,7 @@ import { TarjetaHorario } from '@/componentes/Tarjetas/Tarjetas';
 import { Texto } from '@/componentes/Texto/Texto';
 import { useCarga } from '@/hooks/useCarga';
 import { useHaptica } from '@/hooks/useHaptica';
-import { listarAvisos } from '@/servicios/avisos';
+import { useAvisos } from '@/hooks/useAvisos';
 import { proximosEnParada } from '@/servicios/horarios';
 import { rangoDeFechas } from '@/utils/fechas';
 
@@ -21,7 +21,7 @@ const pedirProximos = () => proximosEnParada(PARADA_FAVORITA);
 
 export default function Inicio() {
   const haptica = useHaptica();
-  const avisos = useCarga(listarAvisos);
+  const avisos = useAvisos();
   const proximos = useCarga(pedirProximos);
   const [dialogo, setDialogo] = useState(false);
   const [reportado, setReportado] = useState(false);

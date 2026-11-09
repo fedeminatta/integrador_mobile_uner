@@ -72,7 +72,7 @@ export default function Login() {
         <Tarjeta>
           <Texto variante="subtitulo">Ya iniciaste sesión</Texto>
           <Texto>
-            Entraste como {usuario.nombre} ({usuario.correo}).
+            Entraste como {usuario.nombre} ({usuario.email}).
           </Texto>
           <GrupoBotones>
             <Boton texto="Ir al inicio" icono="home-outline" onPress={() => router.replace('/')} />

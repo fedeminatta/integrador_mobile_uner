@@ -75,7 +75,7 @@ export function MenuLateral({ navigation }: DrawerContentComponentProps) {
             usuario && (
               <View style={e.usuario}>
                 <Texto variante="destacado">{usuario.nombre}</Texto>
-                <Texto variante="chico">{usuario.correo}</Texto>
+                <Texto variante="chico">{usuario.email}</Texto>
               </View>
             )
           )}

@@ -69,7 +69,7 @@ export default function Registro() {
           tipo="contrasena"
           valor={contrasena}
           onCambiar={cambiar('contrasena', setContrasena)}
-          placeholder="Al menos 6 caracteres"
+          placeholder="Al menos 8 caracteres"
           error={errores.contrasena}
         />
         <CampoTexto
