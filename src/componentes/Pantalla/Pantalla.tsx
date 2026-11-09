@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 
+import { BannerConexion } from '@/componentes/BannerConexion/BannerConexion';
 import { crearEstilos } from '@/componentes/Pantalla/Pantalla.estilos';
 import { Texto } from '@/componentes/Texto/Texto';
 import { useEstilos } from '@/tema';
@@ -19,7 +20,10 @@ export function Pantalla({ children, conTabs = false, cabecera }: Props) {
     <KeyboardAvoidingView style={e.fondo} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView style={e.fondo} keyboardShouldPersistTaps="handled">
         {cabecera}
-        <View style={[e.contenido, conTabs ? e.conTabs : e.sinTabs]}>{children}</View>
+        <View style={[e.contenido, conTabs ? e.conTabs : e.sinTabs]}>
+          <BannerConexion />
+          {children}
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
