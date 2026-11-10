@@ -2,7 +2,52 @@
 
 App móvil para los pasajeros de colectivos de Paraná: líneas y recorridos de ida y vuelta, paradas cercanas, próximos horarios según la tabla, avisos de desvíos y reportes de demora.
 
-Trabajo Práctico Integrador de Desarrollo para Móviles (UNER, 2026).
+|  |  |
+| --- | --- |
+| Universidad | UNER — Universidad Nacional de Entre Ríos |
+| Carrera | Tecnicatura Universitaria en Desarrollo Web |
+| Materia | Desarrollo para Móviles — 2.º cuatrimestre 2026 |
+| Trabajo | Trabajo Práctico Integrador |
+| Grupo | 61 |
+
+**Docentes**
+
+- Prof. Titular: Lic. Franco Ruis Dias — [franco.ruisdias@uner.edu.ar](mailto:franco.ruisdias@uner.edu.ar)
+- Jefe de Trabajos Prácticos: Lic. Germán Cueva — [german.cueva@uner.edu.ar](mailto:german.cueva@uner.edu.ar)
+
+**Integrantes**
+
+- Cristian Mateo Acuña
+- Joaquín Arce
+- Federico Minatta
+- Vanesa Moreno
+- Virginia Alejandra Ponce
+
+---
+
+## Probar la app
+
+| | |
+| --- | --- |
+| **APK para Android** | *Link de descarga: se agrega cuando esté el build de EAS.* |
+| **API publicada** | [paran-api-7n36.onrender.com/salud](https://paran-api-7n36.onrender.com/salud) |
+| **Documentación de la API** | [paran-api-7n36.onrender.com/docs](https://paran-api-7n36.onrender.com/docs) |
+| **Usuario de prueba** | `julian@mail.com` — contraseña `demo1234` |
+
+La API corre en el plan gratuito de Render: después de 15 minutos sin uso se duerme y la primera carga tarda cerca de un minuto.
+
+Para abrirla desde el código con Expo Go (SDK 57): `npm install`, `npx expo start --go` y escanear el QR desde la app Expo Go.
+
+## Qué hace la app
+
+- Líneas con su estado (normal, con desvío o suspendida), recorrido dibujado en el mapa y paradas en orden, por sentido.
+- Paradas cercanas en el mapa, búsqueda por nombre o calle, filtro por línea y flecha con la brújula hacia la parada.
+- Próximos colectivos según la tabla, con los minutos que faltan; aviso de "no hay más servicio hasta mañana" y horarios del día por tipo de día (hábil, sábado, domingo y feriado).
+- Avisos de la Dirección de Transporte, con el recorrido alternativo del desvío en el mapa.
+- Reportes de demora de los pasajeros y confirmación de los de otros.
+- Favoritos y paradas recientes en el inicio, recordatorio "avisame 10 minutos antes" y compartir una parada.
+- Registro e ingreso, sesión en `expo-secure-store` y desbloqueo con huella o rostro.
+- Lector de QR de parada, aviso sin conexión, modo claro y oscuro.
 
 | | |
 | --- | --- |
@@ -10,6 +55,7 @@ Trabajo Práctico Integrador de Desarrollo para Móviles (UNER, 2026).
 | Lenguaje | TypeScript |
 | Navegación | Expo Router |
 | Datos | API de la cátedra, `expo-sqlite` y `kv-store` |
+| Mapas | `react-native-maps` + `expo-location` |
 
 ## Instalación
 
@@ -106,6 +152,58 @@ IP de la computadora:
 Después de cambiar `.env.local`, reiniciar Metro con `npx expo start --go -c`.
 
 Para comprobar la conexión, abrir `<EXPO_PUBLIC_API_URL>/salud` en el navegador del celular: tiene que responder `"estado": "ok"`. La documentación de los endpoints está en `<EXPO_PUBLIC_API_URL>/docs`.
+
+## API publicada (Render + Supabase)
+
+La API de la cátedra está publicada con servicios gratuitos, así el APK funciona desde cualquier red:
+
+| Pieza | Servicio |
+| --- | --- |
+| API (imagen Docker del repositorio de la cátedra) | Render, web service gratuito |
+| Base de datos PostgreSQL | Supabase |
+| Fotos y videos | Supabase Storage (bucket privado `archivos`) |
+
+**Supabase**
+
+1. Proyecto nuevo `paran-api`, región Americas.
+2. **Connect** → cadena de conexión del *session pooler* (puerto `5432`, dominio `pooler.supabase.com`): es `DB_URL`, con la contraseña de la base reemplazada. La contraseña conviene que tenga solo letras y números.
+3. **Storage** → bucket privado `archivos`.
+4. **Storage → S3 Connection** → región y clave de acceso nueva (`Access key ID` y `Secret access key`).
+
+**Render**
+
+1. **New → Web Service → Public Git Repository**: `https://github.com/franco-ruisdias-uner/api-proyectos-mobile`.
+2. Lenguaje **Docker**, plan **Free**, región Virginia (la misma que Supabase).
+3. **Root Directory**: `api-transporte-publico`; **Dockerfile Path**: `Dockerfile`; **Docker Build Context Directory**: `.`.
+4. **Health Check Path**: `/salud`.
+5. Variables de entorno:
+
+| Variable | Valor |
+| --- | --- |
+| `ENTORNO` | `publicado` |
+| `CONFIAR_PROXY` | `true` |
+| `DB_MOTOR` | `postgres` |
+| `DB_PROVEEDOR` | `supabase` |
+| `ARCHIVOS_PROVEEDOR` | `supabase` |
+| `SEMBRAR_SI_VACIA` | `true` |
+| `DB_SINCRONIZAR` | `true` |
+| `NOTIFICACIONES` | `expo` |
+| `DB_URL` | cadena del *session pooler* de Supabase |
+| `SUPABASE_PROYECTO` | identificador del proyecto (`https://<identificador>.supabase.co`) |
+| `S3_BUCKET` | `archivos` |
+| `S3_REGION` | región de Supabase Storage |
+| `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | clave de acceso de Supabase Storage |
+| `JWT_SECRETO` | generado por Render (botón **Generate**) |
+
+Al primer deploy la API crea las tablas y carga los datos de demo. Para comprobarla: `https://paran-api-7n36.onrender.com/salud` responde `"estado": "ok"`.
+
+Errores frecuentes al publicar:
+
+| Error en los logs de Render | Solución |
+| --- | --- |
+| `open Dockerfile: no such file or directory` | Revisar *Root Directory* y *Dockerfile Path* |
+| `password authentication failed` | La contraseña de `DB_URL` no coincide; restablecerla en Supabase sin símbolos |
+| `Data type "datetime" ... not supported by "postgres"` | Falta `DB_MOTOR=postgres` |
 
 ## Levantar la API en la computadora (Docker)
 
