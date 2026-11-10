@@ -16,8 +16,9 @@ import { diagnosticoDb } from '../db';
 
 SplashScreen.preventAutoHideAsync();
 
-// Expo Go avisa que no soporta notificaciones push; la app usa solo notificaciones locales.
-LogBox.ignoreLogs(['expo-notifications', 'Push notifications (remote notifications)']);
+// Avisos esperados en desarrollo: Expo Go no soporta notificaciones push (la app usa solo locales)
+// y sin EXPO_PUBLIC_API_URL la app usa a propósito los datos de prueba.
+LogBox.ignoreLogs(['expo-notifications', 'Push notifications (remote notifications)', 'Falta EXPO_PUBLIC_API_URL']);
 
 export default function Layout() {
 	const [fuentesListas, errorFuentes] = useFonts({

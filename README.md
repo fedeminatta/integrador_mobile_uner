@@ -51,9 +51,39 @@ Después de agregar una librería nativa o cambiar `app.json`, regenerar la carp
 npx expo prebuild --clean --platform android
 ```
 
+## APK con EAS (build en la nube)
+
+El build corre en los servidores de Expo y genera un APK que se instala sin Metro. Requiere una cuenta gratuita en [expo.dev](https://expo.dev).
+
+```bash
+npx eas-cli login
+```
+
+La primera vez, vincular el proyecto con la cuenta:
+
+```bash
+npx eas-cli init
+```
+
+Cargar la clave de Google Maps (una sola vez). Sin esta clave el mapa se ve negro en el APK:
+
+```bash
+npx eas-cli env:create --name GOOGLE_MAPS_API_KEY --value <clave> --environment preview --visibility sensitive
+```
+
+Generar el APK de entrega:
+
+```bash
+npx eas-cli build --platform android --profile preview
+```
+
+Al terminar, EAS muestra un link para descargar e instalar el APK. El cupo mensual de builds gratuitos es limitado: hacer el build solo cuando haga falta.
+
+Para usar la clave de Google Maps en un development build local, agregar `GOOGLE_MAPS_API_KEY=<clave>` en `.env.local`.
+
 ## Configurar la API
 
-La dirección de la API va en un archivo `.env.local` en la raíz del proyecto (no se sube al repositorio):
+La app usa la API publicada en `https://paran-api-7n36.onrender.com` (archivo `.env`). Para usar otra, crear `.env.local` en la raíz del proyecto (no se sube al repositorio):
 
 ```bash
 EXPO_PUBLIC_API_URL=http://192.168.1.10:3000
@@ -63,7 +93,7 @@ EXPO_PUBLIC_API_URL=http://192.168.1.10:3000
 | --- | --- |
 | Celular en la misma red | `http://<IP de la computadora>:3000` |
 | Emulador de Android | `http://10.0.2.2:3000` |
-| API publicada | `https://<nombre>.onrender.com` |
+| API publicada | `https://paran-api-7n36.onrender.com` |
 | Sin API (datos de prueba) | vacío: `EXPO_PUBLIC_API_URL=` |
 
 Con la variable vacía, líneas, paradas, horarios y reportes se muestran con datos de prueba que usan los mismos ids que la API (`lin-05`, `par-101`, `avi-088`).
