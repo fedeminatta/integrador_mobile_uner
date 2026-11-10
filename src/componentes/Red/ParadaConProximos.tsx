@@ -7,10 +7,11 @@ import { InsigniaLinea } from '@/componentes/InsigniaLinea/InsigniaLinea';
 import { crearEstilos } from '@/componentes/Red/Red.estilos';
 import { Tarjeta } from '@/componentes/Tarjeta/Tarjeta';
 import { Texto } from '@/componentes/Texto/Texto';
+import { useAhora } from '@/hooks/useAhora';
 import { useCarga } from '@/hooks/useCarga';
 import { obtenerParada, proximosEnParadaRed } from '@/servicios/red';
 import { useEstilos } from '@/tema';
-import { esDeManana } from '@/utils/tablas';
+import { esDeManana, minutosHasta } from '@/utils/tablas';
 
 type Props = {
   paradaId: string;
@@ -25,7 +26,7 @@ export function ParadaConProximos({ paradaId, numeros, onPress }: Props) {
   const parada = useCarga(useCallback(() => obtenerParada(paradaId), [paradaId]));
   const proximos = useCarga(useCallback(() => proximosEnParadaRed(paradaId), [paradaId]));
 
-  const ahora = new Date();
+  const ahora = useAhora();
   const lineas = [...new Set((proximos.datos ?? []).map((h) => h.lineaId))];
 
   return (
@@ -51,6 +52,7 @@ export function ParadaConProximos({ paradaId, numeros, onPress }: Props) {
               <InsigniaLinea numero={numeros.get(lineaId) ?? '?'} chica />
               <Texto variante="destacado">
                 {esDeManana(horas[0], ahora) ? `Mañana a las ${horas[0]}` : horas.join('  ·  ')}
+                {!esDeManana(horas[0], ahora) && <Texto variante="chico">{`  (en ${minutosHasta(horas[0], ahora)} min)`}</Texto>}
               </Texto>
             </View>
           );
