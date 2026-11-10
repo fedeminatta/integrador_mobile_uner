@@ -5,8 +5,8 @@ import {
 	Map as MapaMapLibre,
 	UserLocation,
 } from '@maplibre/maplibre-react-native';
-import { ReactNode, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ReactNode, useMemo, useState } from 'react';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Tema, useEstilos } from '@/tema';
 import type { Coordenadas, Parada } from '@/tipos/types';
@@ -127,6 +127,7 @@ export function MapaBase({
 	children,
 }: PropsBase) {
 	const e = useEstilos(crearEstilos);
+	const [pantallaCompleta, setPantallaCompleta] = useState(false);
 
 	const destino = enfocar
 		? {
@@ -140,9 +141,8 @@ export function MapaBase({
 			}
 		: {};
 
-	return (
-		// Sin borderRadius ni overflow: 'hidden': en Android recortar el mapa puede dibujarlo en negro.
-		<View style={[e.marco, { height: alto }]}>
+	const contenidoMapa = (
+		<>
 			<MapaMapLibre
 				style={e.mapa}
 				mapStyle={ESTILO_MAPA}
@@ -156,8 +156,45 @@ export function MapaBase({
 				{conUbicacion && <UserLocation />}
 				{children}
 			</MapaMapLibre>
+
 			<Text style={e.atribucion}>{ATRIBUCION}</Text>
-		</View>
+		</>
+	);
+
+	return (
+		<>
+			<View style={[e.marco, { height: alto }]}>
+				{contenidoMapa}
+
+				<Pressable
+					style={e.botonPantallaCompleta}
+					onPress={() => setPantallaCompleta(true)}
+					accessibilityRole='button'
+					accessibilityLabel='Ver mapa en pantalla completa'
+				>
+					<Text style={e.textoBoton}>⛶</Text>
+				</Pressable>
+			</View>
+
+			<Modal
+				visible={pantallaCompleta}
+				animationType='slide'
+				onRequestClose={() => setPantallaCompleta(false)}
+			>
+				<View style={e.mapaCompleto}>
+					{contenidoMapa}
+
+					<Pressable
+						style={e.botonCerrar}
+						onPress={() => setPantallaCompleta(false)}
+						accessibilityRole='button'
+						accessibilityLabel='Cerrar mapa en pantalla completa'
+					>
+						<Text style={e.textoBoton}>×</Text>
+					</Pressable>
+				</View>
+			</Modal>
+		</>
 	);
 }
 
@@ -320,5 +357,38 @@ const crearEstilos = ({ colores }: Tema) =>
 			fontSize: 10,
 			color: '#333333',
 			backgroundColor: 'rgba(255, 255, 255, 0.8)',
+		},
+		mapaCompleto: {
+			flex: 1,
+			backgroundColor: colores.fondo,
+		},
+		botonPantallaCompleta: {
+			position: 'absolute',
+			top: 10,
+			right: 10,
+			width: 40,
+			height: 40,
+			borderRadius: 20,
+			alignItems: 'center',
+			justifyContent: 'center',
+			backgroundColor: '#FFFFFF',
+			elevation: 4,
+		},
+		botonCerrar: {
+			position: 'absolute',
+			top: 48,
+			right: 16,
+			width: 44,
+			height: 44,
+			borderRadius: 22,
+			alignItems: 'center',
+			justifyContent: 'center',
+			backgroundColor: '#FFFFFF',
+			elevation: 4,
+		},
+		textoBoton: {
+			fontSize: 26,
+			lineHeight: 30,
+			color: '#222222',
 		},
 	});
