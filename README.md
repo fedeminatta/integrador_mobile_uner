@@ -1,51 +1,149 @@
-## Transporte Público
+# Paran — Transporte público de Paraná
 
-1. Install dependencies
+App móvil para los pasajeros de colectivos de Paraná: líneas y recorridos de ida y vuelta, paradas cercanas, próximos horarios según la tabla, avisos de desvíos y reportes de demora.
 
-   ```bash
-   npm install
-   ```
+Trabajo Práctico Integrador de Desarrollo para Móviles (UNER, 2026).
 
-2. Start the app
+| | |
+| --- | --- |
+| Framework | Expo SDK 57 + React Native 0.86 |
+| Lenguaje | TypeScript |
+| Navegación | Expo Router |
+| Datos | API de la cátedra, `expo-sqlite` y `kv-store` |
 
-   ```bash
-   npx expo start
-   ```
+## Instalación
 
-## Configurar api en local con Docker
-
-1- https://github.com/franco-ruisdias-uner/api-proyectos-mobile.git
-2- cd api-proyectos-mobile
-3- git sparse-checkout set api-transporte-publico
-
-## Comandos Docker
-
-Levantar Docker (dentro de la carpeta de la api)
+Requisitos y configuración del entorno (Node, Android Studio, emulador): [INSTALACION.md](INSTALACION.md).
 
 ```bash
-  docker compose up -d
+npm install
 ```
 
-Ver datos de la api
+## Ejecutar la app
+
+### En el celular con Expo Go
 
 ```bash
-  Invoke-RestMethod http://localhost:3000/lineas
+npx expo start --go
 ```
 
-## Crear .env
+Abrir Expo Go en el celular y escanear el QR con la opción **Scan QR code** de la app. El celular y la computadora tienen que estar en la misma red.
 
-1- Abrir una terminal y ejecutar `ipconfig` , copiar de Adaptador de Ethernet el ipv4
-2- en el .env crear EXPO_PUBLIC_API_URL=http://(tu ip):3000
-3- testear abriendo en el celular la url/salud ej : http://192.168.18.112:3000/salud .Deberia devolver el estado:ok
+Para ver y grabar la pantalla del celular en la computadora (celular conectado por USB con la depuración USB activada):
 
-Leer doc de la api (teniendola levantada)
-1- Abrir en el navedaor url/docs
+```bash
+scrcpy --record demo.mp4
+```
 
-Otros recursos:
+### Development build (emulador o celular por USB)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+```bash
+./scripts/android.sh emulador
+```
 
-- [Expo documentation](https://docs.expo.dev/)
+```bash
+./scripts/android.sh dispositivo
+```
+
+Después de agregar una librería nativa o cambiar `app.json`, regenerar la carpeta `android/`:
+
+```bash
+npx expo prebuild --clean --platform android
+```
+
+## Configurar la API
+
+La dirección de la API va en un archivo `.env.local` en la raíz del proyecto (no se sube al repositorio):
+
+```bash
+EXPO_PUBLIC_API_URL=http://192.168.1.10:3000
+```
+
+| Dónde corre la app | Valor de `EXPO_PUBLIC_API_URL` |
+| --- | --- |
+| Celular en la misma red | `http://<IP de la computadora>:3000` |
+| Emulador de Android | `http://10.0.2.2:3000` |
+| API publicada | `https://<nombre>.onrender.com` |
+| Sin API (datos de prueba) | vacío: `EXPO_PUBLIC_API_URL=` |
+
+Con la variable vacía, líneas, paradas, horarios y reportes se muestran con datos de prueba que usan los mismos ids que la API (`lin-05`, `par-101`, `avi-088`).
+
+IP de la computadora:
+
+- Linux: `hostname -I`
+- Windows: `ipconfig` (dirección IPv4 del adaptador de red)
+
+Después de cambiar `.env.local`, reiniciar Metro con `npx expo start --go -c`.
+
+Para comprobar la conexión, abrir `<EXPO_PUBLIC_API_URL>/salud` en el navegador del celular: tiene que responder `"estado": "ok"`. La documentación de los endpoints está en `<EXPO_PUBLIC_API_URL>/docs`.
+
+## Levantar la API en la computadora (Docker)
+
+```bash
+git clone --filter=blob:none --sparse https://github.com/franco-ruisdias-uner/api-proyectos-mobile.git
+```
+
+```bash
+cd api-proyectos-mobile
+```
+
+```bash
+git sparse-checkout set api-transporte-publico
+```
+
+```bash
+cd api-transporte-publico
+```
+
+```bash
+docker compose up -d
+```
+
+Comprobar que responde:
+
+```bash
+curl http://localhost:3000/lineas
+```
+
+En Windows (PowerShell): `Invoke-RestMethod http://localhost:3000/lineas`.
+
+Usuarios de prueba (contraseña `demo1234`):
+
+| Email | Para qué sirve |
+| --- | --- |
+| `julian@mail.com` | Pasajero con favoritos y reportes |
+| `nuevo@demo.ar` | Cuenta vacía, para ver las listas sin datos |
+
+## Estructura
+
+```
+src/
+├── app/          # pantallas (Expo Router)
+│   ├── (tabs)/   # inicio, líneas, paradas y avisos
+│   └── (detalle)/ # línea, parada, aviso, reportar, favoritos y Yo
+├── componentes/  # componentes de la app
+├── servicios/    # acceso a la API (con datos de prueba si no hay API)
+├── hooks/        # sesión, favoritos, red, permisos, brújula...
+├── db/           # SQLite, kv-store y secure-store
+├── tipos/        # tipos del PRD y de la API
+├── mocks/        # datos de prueba
+├── utils/        # horarios, distancias, fechas, validaciones
+└── tema/         # colores claro/oscuro y medidas
+```
+
+## Antes de subir cambios
+
+```bash
+npx expo lint
+```
+
+```bash
+npx tsc --noEmit
+```
+
+## Recursos
+
+- [Documentación de Expo SDK 57](https://docs.expo.dev/versions/v57.0.0/)
+- [Expo Router](https://docs.expo.dev/router/introduction/)
+- [Development builds](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Expo Go](https://expo.dev/go)
