@@ -1,71 +1,72 @@
 {
-  "expo": {
-    "name": "Paran",
-    "slug": "paran",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "paran",
-    "userInterfaceStyle": "automatic",
-    "ios": {
-      "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "ar.edu.uner.paran"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#FFFFFF",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png"
-      },
-      "predictiveBackGestureEnabled": false,
-      "package": "ar.edu.uner.paran"
-    },
-    "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#FFFFFF",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 160
-        }
-      ],
-      "expo-secure-store",
-      "expo-sqlite",
-      "expo-notifications",
-      [
-        "expo-local-authentication",
-        {
-          "faceIDPermission": "Usamos Face ID para desbloquear tu sesion"
-        }
-      ],
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "Usamos la camara oara escanear el QR de las paradas y sacar fotos a tus reportes",
-          "recordAudioAndroid": false
-        }
-      ],
-      [
-        "expo-location",
-        {
-          "locationWhenInUsePermission": "Usamos tu ubicacion para mostrarte las paradas y lineas mas cercanas"
-        }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "d6ac0ca3-35bf-4782-aea9-427f3476833f"
-      }
-    }
-  }
+	"expo": {
+		"name": "Paran",
+		"slug": "paran",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/images/icon.png",
+		"scheme": "paran",
+		"userInterfaceStyle": "automatic",
+		"ios": {
+			"icon": "./assets/images/icon.png",
+			"bundleIdentifier": "ar.edu.uner.paran"
+		},
+		"android": {
+			"adaptiveIcon": {
+				"backgroundColor": "#FFFFFF",
+				"foregroundImage": "./assets/images/android-icon-foreground.png",
+				"backgroundImage": "./assets/images/android-icon-background.png"
+			},
+			"predictiveBackGestureEnabled": false,
+			"package": "ar.edu.uner.paran"
+		},
+		"web": {
+			"output": "static",
+			"favicon": "./assets/images/favicon.png"
+		},
+		"plugins": [
+			"expo-router",
+			"@maplibre/maplibre-react-native",
+			[
+				"expo-splash-screen",
+				{
+					"backgroundColor": "#FFFFFF",
+					"image": "./assets/images/splash-icon.png",
+					"imageWidth": 160
+				}
+			],
+			"expo-secure-store",
+			"expo-sqlite",
+			"expo-notifications",
+			[
+				"expo-local-authentication",
+				{
+					"faceIDPermission": "Usamos Face ID para desbloquear tu sesion"
+				}
+			],
+			[
+				"expo-camera",
+				{
+					"cameraPermission": "Usamos la camara oara escanear el QR de las paradas y sacar fotos a tus reportes",
+					"recordAudioAndroid": false
+				}
+			],
+			[
+				"expo-location",
+				{
+					"locationWhenInUsePermission": "Usamos tu ubicacion para mostrarte las paradas y lineas mas cercanas"
+				}
+			]
+		],
+		"experiments": {
+			"typedRoutes": true,
+			"reactCompiler": true
+		},
+		"extra": {
+			"router": {},
+			"eas": {
+				"projectId": "d6ac0ca3-35bf-4782-aea9-427f3476833f"
+			}
+		}
+	}
 }

@@ -2,13 +2,13 @@
 
 App móvil para los pasajeros de colectivos de Paraná: líneas y recorridos de ida y vuelta, paradas cercanas, próximos horarios según la tabla, avisos de desvíos y reportes de demora.
 
-|  |  |
-| --- | --- |
-| Universidad | UNER — Universidad Nacional de Entre Ríos |
-| Carrera | Tecnicatura Universitaria en Desarrollo Web |
-| Materia | Desarrollo para Móviles — 2.º cuatrimestre 2026 |
-| Trabajo | Trabajo Práctico Integrador |
-| Grupo | 61 |
+|             |                                                 |
+| ----------- | ----------------------------------------------- |
+| Universidad | UNER — Universidad Nacional de Entre Ríos       |
+| Carrera     | Tecnicatura Universitaria en Desarrollo Web     |
+| Materia     | Desarrollo para Móviles — 2.º cuatrimestre 2026 |
+| Trabajo     | Trabajo Práctico Integrador                     |
+| Grupo       | 61                                              |
 
 **Docentes**
 
@@ -27,12 +27,12 @@ App móvil para los pasajeros de colectivos de Paraná: líneas y recorridos de 
 
 ## Probar la app
 
-| | |
-| --- | --- |
-| **APK para Android** | *Link de descarga: se agrega cuando esté el build de EAS.* |
-| **API publicada** | [paran-api-7n36.onrender.com/salud](https://paran-api-7n36.onrender.com/salud) |
-| **Documentación de la API** | [paran-api-7n36.onrender.com/docs](https://paran-api-7n36.onrender.com/docs) |
-| **Usuario de prueba** | `julian@mail.com` — contraseña `demo1234` |
+|                             |                                                                                |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| **APK para Android**        | _Link de descarga: se agrega cuando esté el build de EAS._                     |
+| **API publicada**           | [paran-api-7n36.onrender.com/salud](https://paran-api-7n36.onrender.com/salud) |
+| **Documentación de la API** | [paran-api-7n36.onrender.com/docs](https://paran-api-7n36.onrender.com/docs)   |
+| **Usuario de prueba**       | `julian@mail.com` — contraseña `demo1234`                                      |
 
 La API corre en el plan gratuito de Render: después de 15 minutos sin uso se duerme y la primera carga tarda cerca de un minuto.
 
@@ -49,13 +49,13 @@ Para abrirla desde el código con Expo Go (SDK 57): `npm install`, `npx expo sta
 - Registro e ingreso, sesión en `expo-secure-store` y desbloqueo con huella o rostro.
 - Lector de QR de parada, aviso sin conexión, modo claro y oscuro.
 
-| | |
-| --- | --- |
-| Framework | Expo SDK 57 + React Native 0.86 |
-| Lenguaje | TypeScript |
-| Navegación | Expo Router |
-| Datos | API de la cátedra, `expo-sqlite` y `kv-store` |
-| Mapas | `react-native-maps` + `expo-location` |
+|            |                                               |
+| ---------- | --------------------------------------------- |
+| Framework  | Expo SDK 57 + React Native 0.86               |
+| Lenguaje   | TypeScript                                    |
+| Navegación | Expo Router                                   |
+| Datos      | API de la cátedra, `expo-sqlite` y `kv-store` |
+| Mapas      | `react-native-maps` + `expo-location`         |
 
 ## Instalación
 
@@ -111,12 +111,6 @@ La primera vez, vincular el proyecto con la cuenta:
 npx eas-cli init
 ```
 
-Cargar la clave de Google Maps (una sola vez). Sin esta clave el mapa se ve negro en el APK:
-
-```bash
-npx eas-cli env:create --name GOOGLE_MAPS_API_KEY --value <clave> --environment preview --visibility sensitive
-```
-
 Generar el APK de entrega:
 
 ```bash
@@ -135,12 +129,12 @@ La app usa la API publicada en `https://paran-api-7n36.onrender.com` (archivo `.
 EXPO_PUBLIC_API_URL=http://192.168.1.10:3000
 ```
 
-| Dónde corre la app | Valor de `EXPO_PUBLIC_API_URL` |
-| --- | --- |
-| Celular en la misma red | `http://<IP de la computadora>:3000` |
-| Emulador de Android | `http://10.0.2.2:3000` |
-| API publicada | `https://paran-api-7n36.onrender.com` |
-| Sin API (datos de prueba) | vacío: `EXPO_PUBLIC_API_URL=` |
+| Dónde corre la app        | Valor de `EXPO_PUBLIC_API_URL`        |
+| ------------------------- | ------------------------------------- |
+| Celular en la misma red   | `http://<IP de la computadora>:3000`  |
+| Emulador de Android       | `http://10.0.2.2:3000`                |
+| API publicada             | `https://paran-api-7n36.onrender.com` |
+| Sin API (datos de prueba) | vacío: `EXPO_PUBLIC_API_URL=`         |
 
 Con la variable vacía, líneas, paradas, horarios y reportes se muestran con datos de prueba que usan los mismos ids que la API (`lin-05`, `par-101`, `avi-088`).
 
@@ -157,16 +151,16 @@ Para comprobar la conexión, abrir `<EXPO_PUBLIC_API_URL>/salud` en el navegador
 
 La API de la cátedra está publicada con servicios gratuitos, así el APK funciona desde cualquier red:
 
-| Pieza | Servicio |
-| --- | --- |
-| API (imagen Docker del repositorio de la cátedra) | Render, web service gratuito |
-| Base de datos PostgreSQL | Supabase |
-| Fotos y videos | Supabase Storage (bucket privado `archivos`) |
+| Pieza                                             | Servicio                                     |
+| ------------------------------------------------- | -------------------------------------------- |
+| API (imagen Docker del repositorio de la cátedra) | Render, web service gratuito                 |
+| Base de datos PostgreSQL                          | Supabase                                     |
+| Fotos y videos                                    | Supabase Storage (bucket privado `archivos`) |
 
 **Supabase**
 
 1. Proyecto nuevo `paran-api`, región Americas.
-2. **Connect** → cadena de conexión del *session pooler* (puerto `5432`, dominio `pooler.supabase.com`): es `DB_URL`, con la contraseña de la base reemplazada. La contraseña conviene que tenga solo letras y números.
+2. **Connect** → cadena de conexión del _session pooler_ (puerto `5432`, dominio `pooler.supabase.com`): es `DB_URL`, con la contraseña de la base reemplazada. La contraseña conviene que tenga solo letras y números.
 3. **Storage** → bucket privado `archivos`.
 4. **Storage → S3 Connection** → región y clave de acceso nueva (`Access key ID` y `Secret access key`).
 
@@ -178,32 +172,32 @@ La API de la cátedra está publicada con servicios gratuitos, así el APK funci
 4. **Health Check Path**: `/salud`.
 5. Variables de entorno:
 
-| Variable | Valor |
-| --- | --- |
-| `ENTORNO` | `publicado` |
-| `CONFIAR_PROXY` | `true` |
-| `DB_MOTOR` | `postgres` |
-| `DB_PROVEEDOR` | `supabase` |
-| `ARCHIVOS_PROVEEDOR` | `supabase` |
-| `SEMBRAR_SI_VACIA` | `true` |
-| `DB_SINCRONIZAR` | `true` |
-| `NOTIFICACIONES` | `expo` |
-| `DB_URL` | cadena del *session pooler* de Supabase |
-| `SUPABASE_PROYECTO` | identificador del proyecto (`https://<identificador>.supabase.co`) |
-| `S3_BUCKET` | `archivos` |
-| `S3_REGION` | región de Supabase Storage |
-| `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | clave de acceso de Supabase Storage |
-| `JWT_SECRETO` | generado por Render (botón **Generate**) |
+| Variable                                   | Valor                                                              |
+| ------------------------------------------ | ------------------------------------------------------------------ |
+| `ENTORNO`                                  | `publicado`                                                        |
+| `CONFIAR_PROXY`                            | `true`                                                             |
+| `DB_MOTOR`                                 | `postgres`                                                         |
+| `DB_PROVEEDOR`                             | `supabase`                                                         |
+| `ARCHIVOS_PROVEEDOR`                       | `supabase`                                                         |
+| `SEMBRAR_SI_VACIA`                         | `true`                                                             |
+| `DB_SINCRONIZAR`                           | `true`                                                             |
+| `NOTIFICACIONES`                           | `expo`                                                             |
+| `DB_URL`                                   | cadena del _session pooler_ de Supabase                            |
+| `SUPABASE_PROYECTO`                        | identificador del proyecto (`https://<identificador>.supabase.co`) |
+| `S3_BUCKET`                                | `archivos`                                                         |
+| `S3_REGION`                                | región de Supabase Storage                                         |
+| `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | clave de acceso de Supabase Storage                                |
+| `JWT_SECRETO`                              | generado por Render (botón **Generate**)                           |
 
 Al primer deploy la API crea las tablas y carga los datos de demo. Para comprobarla: `https://paran-api-7n36.onrender.com/salud` responde `"estado": "ok"`.
 
 Errores frecuentes al publicar:
 
-| Error en los logs de Render | Solución |
-| --- | --- |
-| `open Dockerfile: no such file or directory` | Revisar *Root Directory* y *Dockerfile Path* |
-| `password authentication failed` | La contraseña de `DB_URL` no coincide; restablecerla en Supabase sin símbolos |
-| `Data type "datetime" ... not supported by "postgres"` | Falta `DB_MOTOR=postgres` |
+| Error en los logs de Render                            | Solución                                                                      |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| `open Dockerfile: no such file or directory`           | Revisar _Root Directory_ y _Dockerfile Path_                                  |
+| `password authentication failed`                       | La contraseña de `DB_URL` no coincide; restablecerla en Supabase sin símbolos |
+| `Data type "datetime" ... not supported by "postgres"` | Falta `DB_MOTOR=postgres`                                                     |
 
 ## Levantar la API en la computadora (Docker)
 
@@ -237,10 +231,10 @@ En Windows (PowerShell): `Invoke-RestMethod http://localhost:3000/lineas`.
 
 Usuarios de prueba (contraseña `demo1234`):
 
-| Email | Para qué sirve |
-| --- | --- |
-| `julian@mail.com` | Pasajero con favoritos y reportes |
-| `nuevo@demo.ar` | Cuenta vacía, para ver las listas sin datos |
+| Email             | Para qué sirve                              |
+| ----------------- | ------------------------------------------- |
+| `julian@mail.com` | Pasajero con favoritos y reportes           |
+| `nuevo@demo.ar`   | Cuenta vacía, para ver las listas sin datos |
 
 ## Estructura
 
