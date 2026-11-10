@@ -4,7 +4,8 @@ import { useCallback, useState } from 'react';
 import { EsqueletoLista } from '@/componentes/Esqueleto/Esqueleto';
 import { EstadoVacio, ErrorReintentar } from '@/componentes/Estados/Estados';
 import { Pantalla, Seccion } from '@/componentes/Pantalla/Pantalla';
-import { BotonFavorito, GrillaHoras, Segmentos, TarjetaAvisoRed, TarjetaParadaRed } from '@/componentes/Red/Red';
+import { MapaRecorrido } from '@/componentes/Mapa/Mapa';
+import { BotonFavorito, GrillaHoras, RecorridoTimeline, Segmentos, TarjetaAvisoRed } from '@/componentes/Red/Red';
 import { Texto } from '@/componentes/Texto/Texto';
 import { useCarga } from '@/hooks/useCarga';
 import { useFavoritos } from '@/hooks/useFavoritos';
@@ -38,6 +39,12 @@ export default function DetalleLinea() {
   const horarios = useCarga(
     useCallback(() => (cabecera ? horariosDeParada(id, cabecera, tipo) : responder<Horario[]>([])), [id, cabecera, tipo]),
   );
+
+  // Paradas del sentido elegido, en el orden de paso.
+  const paradasDelRecorrido = (recorrido?.paradaIds ?? [])
+    .map((paradaId) => paradas.datos?.find((p) => p.id === paradaId))
+    .filter((p) => p !== undefined);
+  const abrirParada = (paradaId: string) => router.push({ pathname: '/parada/[id]', params: { id: paradaId } });
 
   const titulo = linea.datos ? `Línea ${linea.datos.numero}` : 'Línea';
 
@@ -73,28 +80,28 @@ export default function DetalleLinea() {
               {recorrido && <Texto variante="destacado">{recorrido.destino}</Texto>}
             </Seccion>
 
-            {/* El mapa con el trazado del recorrido (react-native-maps) va en esta sección. */}
+            {recorrido && (
+              <MapaRecorrido
+                trazado={recorrido.trazado}
+                color={linea.datos.color}
+                paradas={paradasDelRecorrido}
+                onParada={abrirParada}
+                etiqueta={`Recorrido de la línea ${linea.datos.numero} ${recorrido.destino}`}
+              />
+            )}
 
             <Seccion titulo="Paradas" descripcion="En el orden en que pasa el colectivo">
               {paradas.cargando ? (
                 <EsqueletoLista variante="parada" cantidad={3} />
               ) : paradas.error ? (
                 <ErrorReintentar error={paradas.error} onReintentar={paradas.recargar} />
-              ) : recorrido?.paradaIds.length ? (
-                recorrido.paradaIds.map((paradaId, i) => {
-                  const parada = paradas.datos?.find((p) => p.id === paradaId);
-                  return (
-                    parada && (
-                      <TarjetaParadaRed
-                        key={paradaId}
-                        parada={parada}
-                        orden={i + 1}
-                        favorita={favoritos.esParadaFavorita(paradaId)}
-                        onPress={() => router.push({ pathname: '/parada/[id]', params: { id: paradaId } })}
-                      />
-                    )
-                  );
-                })
+              ) : paradasDelRecorrido.length ? (
+                <RecorridoTimeline
+                  paradas={paradasDelRecorrido}
+                  color={linea.datos.color}
+                  esFavorita={favoritos.esParadaFavorita}
+                  onPress={abrirParada}
+                />
               ) : (
                 <EstadoVacio icono="location-outline" titulo="Este recorrido no tiene paradas cargadas" />
               )}

@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import { EsqueletoLista } from '@/componentes/Esqueleto/Esqueleto';
 import { ErrorReintentar } from '@/componentes/Estados/Estados';
 import { Pantalla, Seccion } from '@/componentes/Pantalla/Pantalla';
+import { MapaRecorrido } from '@/componentes/Mapa/Mapa';
 import { ChipGravedad, TarjetaLineaRed } from '@/componentes/Red/Red';
 import { crearEstilos } from '@/componentes/Red/Red.estilos';
 import { Tarjeta } from '@/componentes/Tarjeta/Tarjeta';
@@ -43,7 +44,16 @@ export default function DetalleAviso() {
             </Tarjeta>
 
             {/* El video del desvío (expo-video, con controles a la vista) va en esta sección cuando aviso.videoUrl no es null. */}
-            {/* El recorrido alternativo (aviso.trazadoAlternativo) se dibuja en el mapa en esta sección. */}
+            {aviso.datos.trazadoAlternativo && (
+              <Seccion titulo="Por dónde pasa ahora" descripcion="Punteado: recorrido del desvío. Línea llena: recorrido habitual.">
+                <MapaRecorrido
+                  trazado={afectadas[0]?.recorridos[0]?.trazado ?? []}
+                  color={afectadas[0]?.color ?? '#04295a'}
+                  alternativo={aviso.datos.trazadoAlternativo}
+                  etiqueta={`Recorrido alternativo: ${aviso.datos.titulo}`}
+                />
+              </Seccion>
+            )}
 
             <Seccion titulo="Líneas afectadas">
               {lineas.cargando ? (

@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Icono } from '@/componentes/Icono/Icono';
 import { InsigniaLinea } from '@/componentes/InsigniaLinea/InsigniaLinea';
@@ -171,16 +171,97 @@ export function TarjetaAvisoRed({ aviso, numerosLinea, onPress }: PropsAviso) {
   );
 }
 
-// Grilla de horas de tabla ("05:20", "05:40"...).
-export function GrillaHoras({ horas }: { horas: string[] }) {
+// Grilla de horas de tabla ("05:20", "05:40"...). La hora resaltada es la próxima en pasar.
+export function GrillaHoras({ horas, resaltada }: { horas: string[]; resaltada?: string | null }) {
   const e = useEstilos(crearEstilos);
   return (
     <View style={e.horas}>
       {horas.map((h) => (
-        <View key={h} style={e.hora}>
-          <Text style={e.horaTexto}>{h}</Text>
+        <View
+          key={h}
+          style={[e.hora, h === resaltada && e.horaResaltada]}
+          accessibilityLabel={h === resaltada ? `${h}, el próximo` : h}>
+          <Text style={[e.horaTexto, h === resaltada && e.horaTextoResaltada]}>{h}</Text>
         </View>
       ))}
+    </View>
+  );
+}
+
+type PropsTimeline = {
+  paradas: Parada[];
+  // Color de la línea: la línea vertical y los puntos lo usan, como en un mapa de subte.
+  color: string;
+  esFavorita: (id: string) => boolean;
+  onPress: (id: string) => void;
+};
+
+// Paradas del recorrido en orden, unidas por una línea vertical del color de la línea.
+export function RecorridoTimeline({ paradas, color, esFavorita, onPress }: PropsTimeline) {
+  const e = useEstilos(crearEstilos);
+  return (
+    <Tarjeta sinRelleno>
+      {paradas.map((p, i) => {
+        const extremo = i === 0 || i === paradas.length - 1;
+        return (
+          <Pressable
+            key={p.id}
+            accessibilityRole="button"
+            accessibilityLabel={`Parada ${i + 1}, ${p.nombre}`}
+            onPress={() => onPress(p.id)}
+            style={({ pressed }) => [e.paso, pressed && e.presionado]}>
+            <View style={e.riel}>
+              <View style={[e.tramo, { backgroundColor: i === 0 ? 'transparent' : color }]} />
+              <View style={[e.punto, { borderColor: color }, extremo && { backgroundColor: color }]} />
+              <View style={[e.tramo, { backgroundColor: i === paradas.length - 1 ? 'transparent' : color }]} />
+            </View>
+            <View style={e.pasoTextos}>
+              <Texto variante={extremo ? 'destacado' : 'cuerpo'}>{p.nombre}</Texto>
+              {!p.refugio && <Texto variante="etiqueta">Sin refugio</Texto>}
+            </View>
+            {esFavorita(p.id) && <Icono nombre="star" tamano={16} color="enlace" />}
+            <Icono nombre="chevron-forward" tamano={18} color="textoSuave" />
+          </Pressable>
+        );
+      })}
+    </Tarjeta>
+  );
+}
+
+// Fila deslizable de líneas para filtrar ("Todas", "5", "14"...). Tocar la elegida la desmarca.
+export function ChipsLineas({ lineas, valor, onCambiar }: { lineas: Linea[]; valor: string | null; onCambiar: (id: string | null) => void }) {
+  const e = useEstilos(crearEstilos);
+  const haptica = useHaptica();
+  if (!lineas.length) return null;
+  const opciones = [{ id: null, texto: 'Todas' }, ...lineas.map((l) => ({ id: l.id, texto: `Línea ${l.numero}` }))];
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={e.chips} accessibilityRole="radiogroup">
+      {opciones.map((o) => {
+        const activo = o.id === valor;
+        return (
+          <Pressable
+            key={o.id ?? 'todas'}
+            accessibilityRole="radio"
+            accessibilityState={{ checked: activo }}
+            onPress={() => {
+              haptica.toque();
+              onCambiar(activo ? null : o.id);
+            }}
+            style={[e.chipFiltro, activo && e.segmentoActivo]}>
+            <Text style={[e.segmentoTexto, activo && e.segmentoTextoActivo]}>{o.texto}</Text>
+          </Pressable>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
+// Insignia con el color propio de la línea (el número va en blanco).
+export function InsigniaColor({ numero, color, chica }: { numero: string; color: string; chica?: boolean }) {
+  const e = useEstilos(crearEstilos);
+  return (
+    <View style={[e.insigniaColor, chica && e.insigniaColorChica, { backgroundColor: color }]} accessibilityLabel={`Línea ${numero}`}>
+      <Text style={[e.insigniaColorTexto, chica && e.insigniaColorTextoChico]}>{numero}</Text>
     </View>
   );
 }
