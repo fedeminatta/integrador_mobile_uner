@@ -11,7 +11,7 @@ import { Texto } from '@/componentes/Texto/Texto';
 import { useHaptica } from '@/hooks/useHaptica';
 import { useEstilos } from '@/tema';
 
-// Monograma (abre el menú lateral) y título de la pantalla a la izquierda; QR y ajustes a la derecha.
+// Monograma (abre el menú lateral) y título de la pantalla a la izquierda; buscar, QR y ajustes a la derecha.
 export function Encabezado({ navigation }: DrawerHeaderProps) {
   const e = useEstilos(crearEstilos);
   const haptica = useHaptica();
@@ -20,6 +20,11 @@ export function Encabezado({ navigation }: DrawerHeaderProps) {
    const abrirMenu = () => {
     haptica.toque();
     navigation.openDrawer();
+  };
+
+  const abrirBuscador = () => {
+    haptica.toque();
+    router.push('/buscar');
   };
 
   const abrirEscaner = () => {
@@ -46,6 +51,13 @@ export function Encabezado({ navigation }: DrawerHeaderProps) {
           <Texto variante="titulo" tono="encabezado" accessibilityRole="header" numberOfLines={1} style={e.titulo}>
             {tituloDeRuta(pathname)}
           </Texto>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Buscar línea o parada"
+            onPress={abrirBuscador}
+            style={({ pressed }) => [e.botonIcono, pressed && e.presionado]}>
+            <Icono nombre="search" tamano={22} color="sobreEncabezado" />
+          </Pressable>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Escanear QR de parada"
