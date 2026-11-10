@@ -12,13 +12,17 @@ export default function Lineas() {
   const { datos, error, cargando, recargar } = useCarga(listarLineasRed);
   const avisos = useCarga(listarAvisosRed);
   const favoritos = useFavoritos();
+  const refrescar = () => {
+    recargar();
+    avisos.recargar();
+  };
 
   const estadoDe = (lineaId: string) => estadoDeLinea((avisos.datos ?? []).filter((a) => a.lineaIds.includes(lineaId)).map((a) => a.gravedad));
   // Las favoritas primero; el resto en el orden de la API (por número).
   const ordenadas = [...(datos ?? [])].sort((a, b) => Number(favoritos.esLineaFavorita(b.id)) - Number(favoritos.esLineaFavorita(a.id)));
 
   return (
-    <Pantalla conTabs>
+    <Pantalla conTabs onRefrescar={refrescar}>
       <Seccion titulo="Todas las líneas" descripcion="Estado del servicio según los avisos vigentes">
         {cargando ? (
           <EsqueletoLista variante="linea" cantidad={5} />

@@ -39,7 +39,7 @@ export default function Avisos() {
   };
 
   return (
-    <Pantalla conTabs>
+    <Pantalla conTabs onRefrescar={recargar}>
       {permiso === 'sin-determinar' && (
         <>
           <Notificacion

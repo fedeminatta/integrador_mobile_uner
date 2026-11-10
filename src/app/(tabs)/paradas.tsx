@@ -8,6 +8,7 @@ import { Cargando } from '@/componentes/Cargando/Cargando';
 import { EsqueletoLista } from '@/componentes/Esqueleto/Esqueleto';
 import { EstadoVacio, ErrorReintentar } from '@/componentes/Estados/Estados';
 import { MapaParadas } from '@/componentes/MapaParadas/MapaParadas';
+import { ChipsLineas } from '@/componentes/Red/Red';
 import { Notificacion } from '@/componentes/Notificacion/Notificacion';
 import { Pantalla, Seccion } from '@/componentes/Pantalla/Pantalla';
 import { TarjetaParada } from '@/componentes/Tarjetas/Tarjetas';
@@ -16,10 +17,8 @@ import { usePermisos } from '@/hooks/usePermisos';
 import { ParadaVista } from '@/servicios/paradasApi';
 import { buscarParadas, listarLineasRed } from '@/servicios/red';
 import { ErrorApi } from '@/tipos';
-import type { Coordenadas } from '@/tipos/types';
+import type { Coordenadas, Linea } from '@/tipos/types';
 import { metrosEntre } from '@/utils/distancia';
-import { FlechaRumbo } from '@/componentes/FlechaRumbo/FlechaRumbo';
-import { View } from 'react-native';
 
 export default function Paradas() {
   const { estados, pedir, abrirAjustes } = usePermisos();
@@ -34,6 +33,8 @@ export default function Paradas() {
   const [buscandoUbicacion, setBuscandoUbicacion] = useState(false);
   const [falloUbicacion, setFalloUbicacion] = useState(false);
   const [intentoUbicacion, setIntentoUbicacion] = useState(0);
+  const [lineas, setLineas] = useState<Linea[]>([]);
+  const [lineaFiltro, setLineaFiltro] = useState<string | null>(null);
 
   const conPermiso = estados.ubicacion === 'concedido';
 
@@ -44,6 +45,7 @@ export default function Paradas() {
     if ('error' in rParadas) { setError(rParadas.error); setCargando(false); return; }
     if ('error' in rLineas) { setError(rLineas.error); setCargando(false); return; }
     const numeros = new Map(rLineas.datos.map((l) => [l.id, l.numero]));
+    setLineas(rLineas.datos);
     setParadas(rParadas.datos.map((p) => ({ ...p, numerosLinea: p.lineaIds.map((id) => numeros.get(id) ?? id), distancia: null })));
     setError(null);
     setCargando(false);
@@ -95,9 +97,10 @@ export default function Paradas() {
   const filtradas = vistas
     .filter(
       (p) =>
-        !termino ||
-        p.nombre.toLowerCase().includes(termino) ||
-        p.numerosLinea.some((n) => n.includes(termino)),
+        (!lineaFiltro || p.lineaIds.includes(lineaFiltro)) &&
+        (!termino ||
+          p.nombre.toLowerCase().includes(termino) ||
+          p.numerosLinea.some((n) => n.includes(termino))),
     )
     .sort((a, b) => {
       if (a.distancia != null && b.distancia != null) return a.distancia - b.distancia;
@@ -110,7 +113,12 @@ export default function Paradas() {
   };
 
   return (
-    <Pantalla conTabs>
+    <Pantalla
+      conTabs
+      onRefrescar={() => {
+        setCargando(true);
+        cargar(() => true);
+      }}>
       <CampoTexto
         etiqueta="Buscar parada"
         tipo="busqueda"
@@ -118,12 +126,14 @@ export default function Paradas() {
         onCambiar={setBusqueda}
         placeholder="Calle, esquina o número de línea"
       />
+      <ChipsLineas lineas={lineas} valor={lineaFiltro} onCambiar={setLineaFiltro} />
       <MapaParadas
         paradas={filtradas}
         conUbicacion={conPermiso}
         centro={ubicacion}
         seleccionada={seleccionada}
         onSeleccionar={seleccionar}
+        onAbrir={(id) => router.push({ pathname: '/parada/[id]', params: { id } })}
       />
       <Seccion
         titulo="Paradas"
@@ -192,14 +202,6 @@ export default function Paradas() {
           />
         )}
       </Seccion>
-      <View style={{ marginTop: 20 }}>
-        <FlechaRumbo
-          latUsuario={-31.7333}
-          lonUsuario={-60.5241}
-          latParada={-31.7321}
-          lonParada={-60.5229}
-        />
-      </View>
     </Pantalla>
     
   );
