@@ -11,7 +11,7 @@ import { Texto } from '@/componentes/Texto/Texto';
 import { useHaptica } from '@/hooks/useHaptica';
 import { useEstilos } from '@/tema';
 
-// Logo a la izquierda (abre el menú lateral) y ajustes a la derecha.
+// Monograma (abre el menú lateral) y título de la pantalla a la izquierda; QR y ajustes a la derecha.
 export function Encabezado({ navigation }: DrawerHeaderProps) {
   const e = useEstilos(crearEstilos);
   const haptica = useHaptica();
@@ -40,10 +40,12 @@ export function Encabezado({ navigation }: DrawerHeaderProps) {
             accessibilityRole="button"
             accessibilityLabel="Abrir menú"
             onPress={abrirMenu}
-            hitSlop={6}
             style={({ pressed }) => [e.botonLogo, pressed && e.presionado]}>
-            <Logo tamano="mediano" conPalabra sobre="amarillo" />
+            <Logo tamano="chico" />
           </Pressable>
+          <Texto variante="titulo" tono="encabezado" accessibilityRole="header" numberOfLines={1} style={e.titulo}>
+            {tituloDeRuta(pathname)}
+          </Texto>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Escanear QR de parada"
@@ -59,9 +61,6 @@ export function Encabezado({ navigation }: DrawerHeaderProps) {
             <Icono nombre="settings-outline" tamano={24} color="sobreEncabezado" />
           </Pressable>
         </View>
-        <Texto variante="titulo" tono="encabezado" accessibilityRole="header">
-          {tituloDeRuta(pathname)}
-        </Texto>
       </View>
     </SafeAreaView>
   );

@@ -8,7 +8,7 @@ import { Texto } from '@/componentes/Texto/Texto';
 import { useHaptica } from '@/hooks/useHaptica';
 import { useEstilos } from '@/tema';
 
-// Encabezado de las pantallas de detalle: volver a la izquierda, acción opcional (favorito) a la derecha.
+// Encabezado de las pantallas de detalle: volver y título a la izquierda, acción opcional (favorito) a la derecha.
 export function EncabezadoDetalle({ navigation, options, back }: NativeStackHeaderProps) {
   const e = useEstilos(crearEstilos);
   const haptica = useHaptica();
@@ -31,11 +31,11 @@ export function EncabezadoDetalle({ navigation, options, back }: NativeStackHead
             style={({ pressed }) => [e.botonIcono, pressed && e.presionado]}>
             <Icono nombre="arrow-back" tamano={24} color="sobreEncabezado" />
           </Pressable>
+          <Texto variante="titulo" tono="encabezado" accessibilityRole="header" numberOfLines={1} style={e.titulo}>
+            {options.title ?? 'Paran'}
+          </Texto>
           {options.headerRight?.({ canGoBack: true })}
         </View>
-        <Texto variante="titulo" tono="encabezado" accessibilityRole="header">
-          {options.title ?? 'Paran'}
-        </Texto>
       </View>
     </SafeAreaView>
   );

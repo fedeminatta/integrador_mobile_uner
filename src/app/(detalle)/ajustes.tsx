@@ -1,3 +1,4 @@
+import { Stack } from 'expo-router';
 import { Platform } from 'react-native';
 
 import { Boton } from '@/componentes/Boton/Boton';
@@ -22,6 +23,7 @@ export default function Ajustes() {
 
   return (
     <Pantalla>
+      <Stack.Screen options={{ title: 'Ajustes' }} />
       <Seccion titulo="Apariencia">
         <Tarjeta sinRelleno>
           {opcionesTema.map((o, i) => (

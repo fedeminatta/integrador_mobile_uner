@@ -22,10 +22,17 @@ export const crearEstilos = (tema: Tema) => {
       gap: espacio.m,
     },
     fila: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: espacio.m },
+    // El título ocupa el espacio libre entre el monograma (o la flecha) y los botones.
+    titulo: { flex: 1, minWidth: 0 },
+    // Fondo blanco para que la parte amarilla de la marca se vea sobre el encabezado amarillo.
     botonLogo: {
-      paddingVertical: espacio.xs,
-      paddingRight: espacio.s,
+      width: 44,
+      height: 44,
+      flexShrink: 0,
       borderRadius: radio.insignia,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#ffffff',
     },
     botonIcono: {
       width: 44,

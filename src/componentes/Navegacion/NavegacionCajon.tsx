@@ -3,7 +3,7 @@ import { Drawer } from 'expo-router/drawer';
 import { Encabezado } from '@/componentes/Navegacion/Encabezado';
 import { MenuLateral } from '@/componentes/Navegacion/MenuLateral';
 import { crearEstilos } from '@/componentes/Navegacion/MenuLateral.estilos';
-import { rutaAjustes, rutasCuenta } from '@/componentes/Navegacion/rutas';
+import { rutasCuenta } from '@/componentes/Navegacion/rutas';
 import { useEstilos, useTema } from '@/tema';
 
 // Menú lateral (izquierda) que contiene las tabs principales y las pantallas de cuenta.
@@ -25,7 +25,7 @@ export function NavegacionCajon() {
       <Drawer.Screen name="(tabs)" />
       {/* Los detalles traen su propio encabezado con la flecha para volver. */}
       <Drawer.Screen name="(detalle)" options={{ headerShown: false, swipeEnabled: false }} />
-      {[...rutasCuenta, rutaAjustes].map((r) => (
+      {rutasCuenta.map((r) => (
         // El login tiene su propio panel con el logo grande (Portada) en lugar del encabezado.
         <Drawer.Screen key={r.nombre} name={r.nombre} options={{ title: r.titulo, headerShown: r.nombre !== 'login' }} />
       ))}

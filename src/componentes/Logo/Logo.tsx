@@ -7,8 +7,6 @@ import { useTema } from '@/tema';
 const imagenes = {
   marca: {
     color: require('@/assets/images/paran/marca-color.png'),
-    blanco: require('@/assets/images/paran/marca-blanco.png'),
-    azul: require('@/assets/images/paran/marca-azul.png'),
   },
   palabra: {
     color: require('@/assets/images/paran/palabra-color.png'),
@@ -36,7 +34,8 @@ export function Logo({ tamano = 'mediano', conPalabra = false, apilado = false, 
   const tono = sobre === 'amarillo' ? 'azul' : esOscuro ? 'blanco' : 'color';
   return (
     <View style={apilado ? estilos.columna : estilos.fila} accessibilityLabel="Paran" accessibilityRole="image" accessible>
-      <Image source={imagenes.marca[tono]} style={estilos[`marca${sufijo[tamano]}`]} contentFit="contain" />
+      {/* La marca va siempre a color, sobre cualquier fondo. */}
+      <Image source={imagenes.marca.color} style={estilos[`marca${sufijo[tamano]}`]} contentFit="contain" />
       {conPalabra && <Image source={imagenes.palabra[tono]} style={estilos[`palabra${sufijo[tamano]}`]} contentFit="contain" />}
     </View>
   );
