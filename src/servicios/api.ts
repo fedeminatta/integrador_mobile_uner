@@ -89,13 +89,13 @@ export async function pedir<T>(
 
 /**
  * Pide todas las páginas de una lista y las junta.
- * `porPagina` máximo: confirmar en http://<tu-api>/docs (el README usa 5000 en /horarios).
+ * `porPagina` máximo: 100 en general, 1000 en /paradas y 5000 en /horarios.
  */
 export async function pedirTodas<T>(
 	ruta: string,
 	opciones: Opciones & { porPagina?: number } = {},
 ): Promise<{ datos: T[]; fechaServidor: string | null }> {
-	const { porPagina = 500, ...resto } = opciones;
+	const { porPagina = 100, ...resto } = opciones;
 	const separador = ruta.includes('?') ? '&' : '?';
 
 	const acumulado: T[] = [];
