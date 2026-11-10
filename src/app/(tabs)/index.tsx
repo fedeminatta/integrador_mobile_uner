@@ -9,17 +9,23 @@ import { EstadoVacio, ErrorReintentar } from '@/componentes/Estados/Estados';
 import { Icono } from '@/componentes/Icono/Icono';
 import { Notificacion } from '@/componentes/Notificacion/Notificacion';
 import { Pantalla, Seccion } from '@/componentes/Pantalla/Pantalla';
+import { MapaParadas } from '@/componentes/MapaParadas/MapaParadas';
 import { ParadaConProximos } from '@/componentes/Red/ParadaConProximos';
-import { estadoDeLinea, TarjetaLineaRed } from '@/componentes/Red/Red';
+import { estadoDeLinea, TarjetaLineaRed, TarjetaParadaRed } from '@/componentes/Red/Red';
 import { Texto } from '@/componentes/Texto/Texto';
 import { useAvisos } from '@/hooks/useAvisos';
 import { useCarga } from '@/hooks/useCarga';
 import { useFavoritos } from '@/hooks/useFavoritos';
 import { useLugar } from '@/hooks/useLugar';
-import { listarLineasRed } from '@/servicios/red';
+import { useRecientes } from '@/hooks/useRecientes';
+import { useUbicacion } from '@/hooks/useUbicacion';
+import { buscarParadas, listarFeriados, listarLineasRed } from '@/servicios/red';
 import { useEstilos } from '@/tema';
 import { crearEstilos } from '@/componentes/Red/Red.estilos';
 import { rangoDeFechas } from '@/utils/fechas';
+import { etiquetaTipoDeDia, tipoDeDia } from '@/utils/tablas';
+
+const todasLasParadas = () => buscarParadas('');
 
 // Inicio: primero lo que la persona guardó (paradas y líneas favoritas), después los avisos de hoy.
 export default function Inicio() {
@@ -29,6 +35,19 @@ export default function Inicio() {
   const { lugar, concedido, puedePedir, pedirPermiso } = useLugar();
   const e = useEstilos(crearEstilos);
   const [avisoCerrado, setAvisoCerrado] = useState(false);
+  const paradas = useCarga(todasLasParadas);
+  const feriados = useCarga(listarFeriados);
+  const { recientes } = useRecientes();
+  const ubicacion = useUbicacion();
+
+  // Fines de semana y feriados rigen otras tablas: se avisa arriba de todo.
+  const tipoHoy = tipoDeDia(new Date(), feriados.datos ?? []);
+  // Recientes que no son favoritas (las favoritas ya se muestran arriba).
+  const paradasRecientes = recientes
+    .filter((id) => !favoritos.esParadaFavorita(id))
+    .map((id) => paradas.datos?.find((p) => p.id === id))
+    .filter((p) => p !== undefined);
+  const abrirParada = (id: string) => router.push({ pathname: '/parada/[id]', params: { id } });
 
   const destacado = avisos.datos?.[0];
   const numeros = new Map((lineas.datos ?? []).map((l) => [l.id, l.numero]));
@@ -49,6 +68,14 @@ export default function Inicio() {
         puedePedir && <Boton texto="Mostrar dónde estoy" variante="texto" icono="location-outline" onPress={pedirPermiso} />
       )}
 
+      {tipoHoy !== 'habil' && feriados.datos && (
+        <Notificacion
+          tipo="info"
+          titulo={`Hoy rige el horario de ${etiquetaTipoDeDia(tipoHoy).toLowerCase()}`}
+          mensaje="Los colectivos pasan con menos frecuencia que un día hábil."
+        />
+      )}
+
       {destacado && !avisoCerrado && (
         <Notificacion tipo="aviso" titulo={destacado.titulo} mensaje={rangoDeFechas(destacado.desde, destacado.hasta)} onCerrar={() => setAvisoCerrado(true)} />
       )}
@@ -67,7 +94,7 @@ export default function Inicio() {
           {favoritos.paradas.length > 0 && (
             <Seccion titulo="Tus paradas" descripcion="Próximos colectivos según la tabla">
               {favoritos.paradas.map((id) => (
-                <ParadaConProximos key={id} paradaId={id} numeros={numeros} onPress={() => router.push({ pathname: '/parada/[id]', params: { id } })} />
+                <ParadaConProximos key={id} paradaId={id} numeros={numeros} onPress={() => abrirParada(id)} />
               ))}
             </Seccion>
           )}
@@ -91,6 +118,19 @@ export default function Inicio() {
         </>
       )}
 
+      {paradasRecientes.length > 0 && (
+        <Seccion titulo="Vistas hace poco">
+          {paradasRecientes.map((p) => (
+            <TarjetaParadaRed
+              key={p.id}
+              parada={p}
+              numerosLinea={p.lineaIds.map((id) => numeros.get(id) ?? '?')}
+              onPress={() => abrirParada(p.id)}
+            />
+          ))}
+        </Seccion>
+      )}
+
       <Seccion titulo="Avisos de hoy">
         {avisos.cargando ? (
           <EsqueletoLista variante="acordeon" cantidad={1} />
@@ -109,6 +149,18 @@ export default function Inicio() {
         ) : (
           <EstadoVacio icono="checkmark-done-outline" titulo="Sin avisos" mensaje="Todas las líneas funcionan normalmente." />
         )}
+      </Seccion>
+
+      <Seccion titulo="Mapa de paradas" descripcion="Toca una parada y después su nombre para ver los horarios">
+        <MapaParadas
+          paradas={paradas.datos ?? []}
+          conUbicacion={concedido}
+          centro={ubicacion}
+          seleccionada={null}
+          onSeleccionar={() => {}}
+          onAbrir={abrirParada}
+          alto={260}
+        />
       </Seccion>
     </Pantalla>
   );
