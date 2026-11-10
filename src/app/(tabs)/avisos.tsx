@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 
 import { Boton } from '@/componentes/Boton/Boton';
@@ -77,7 +77,9 @@ export default function Avisos() {
         ) : error ? (
           <ErrorReintentar error={error} onReintentar={recargar} />
         ) : datos?.length ? (
-          datos.map((a) => <TarjetaAviso key={a.id} aviso={a} />)
+          datos.map((a) => (
+            <TarjetaAviso key={a.id} aviso={a} onPress={() => router.push({ pathname: '/aviso/[id]', params: { id: a.id } })} />
+          ))
         ) : (
           <EstadoVacio
             icono="checkmark-done-outline"

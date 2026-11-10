@@ -54,10 +54,10 @@ export function TarjetaLinea({ linea }: { linea: Linea }) {
   );
 }
 
-export function TarjetaParada({ parada, seleccionada }: { parada: ParadaVista; seleccionada?: boolean }) {
+export function TarjetaParada({ parada, seleccionada, onPress }: { parada: ParadaVista; seleccionada?: boolean; onPress?: () => void }) {
   const e = useEstilos(crearEstilos);
   return (
-    <Tarjeta>
+    <Tarjeta onPress={onPress} etiquetaAccesible={`${parada.nombre}. Ver horarios`}>
       <View style={e.cabeceraTextos}>
         <Texto variante="destacado">{parada.nombre}</Texto>
         {parada.distancia != null && (
@@ -74,10 +74,10 @@ export function TarjetaParada({ parada, seleccionada }: { parada: ParadaVista; s
   );
 }
 
-export function TarjetaAviso({ aviso }: { aviso: AvisoVista }) {
+export function TarjetaAviso({ aviso, onPress }: { aviso: AvisoVista; onPress?: () => void }) {
   const e = useEstilos(crearEstilos);
   return (
-    <Tarjeta>
+    <Tarjeta onPress={onPress} etiquetaAccesible={`Aviso: ${aviso.titulo}. Ver detalle`}>
       <View style={e.cabecera}>
         <View style={e.insignias}>
           {aviso.numerosLinea.map((n) => (

@@ -1,7 +1,7 @@
 import { ErrorDeApi, pedir } from '@/servicios/api';
 import type { RespuestaError, RespuestaUno } from '@/tipos/api';
 import type { Aviso, Linea } from '@/tipos/types';
-import { listarLineasReales } from '@/servicios/paradasApi';
+import { listarAvisosRed, listarLineasRed } from '@/servicios/red';
 
 
 export type Resultado<T> = RespuestaUno<T> | RespuestaError;
@@ -31,9 +31,9 @@ export function listarAvisosReales(): Promise<Resultado<Aviso[]>> {
   return pedirSobre<Aviso[]>('/avisos?porPagina=100');
 }
 
-/** Avisos  numeros de linea (lin-05 → "5") */
+/** Avisos  numeros de linea (lin-05 → "5"). Sin EXPO_PUBLIC_API_URL usa los datos de prueba. */
 export async function avisosVistas(): Promise<Resultado<AvisoVista[]>> {
-  const [rAvisos, rLineas] = await Promise.all([listarAvisosReales(), listarLineasReales()]);
+  const [rAvisos, rLineas] = await Promise.all([listarAvisosRed(), listarLineasRed()]);
   if ('error' in rAvisos) return rAvisos;
   const numeros =
     'error' in rLineas

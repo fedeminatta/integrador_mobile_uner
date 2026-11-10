@@ -1,8 +1,10 @@
 import * as Location from 'expo-location';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import { Boton } from '@/componentes/Boton/Boton';
 import { CampoTexto } from '@/componentes/CampoTexto/CampoTexto';
+import { Cargando } from '@/componentes/Cargando/Cargando';
 import { EsqueletoLista } from '@/componentes/Esqueleto/Esqueleto';
 import { EstadoVacio, ErrorReintentar } from '@/componentes/Estados/Estados';
 import { MapaParadas } from '@/componentes/MapaParadas/MapaParadas';
@@ -11,7 +13,8 @@ import { Pantalla, Seccion } from '@/componentes/Pantalla/Pantalla';
 import { TarjetaParada } from '@/componentes/Tarjetas/Tarjetas';
 import { useHaptica } from '@/hooks/useHaptica';
 import { usePermisos } from '@/hooks/usePermisos';
-import { listarLineasReales, listarParadasReales, ParadaVista } from '@/servicios/paradasApi';
+import { ParadaVista } from '@/servicios/paradasApi';
+import { buscarParadas, listarLineasRed } from '@/servicios/red';
 import { ErrorApi } from '@/tipos';
 import type { Coordenadas } from '@/tipos/types';
 import { metrosEntre } from '@/utils/distancia';
@@ -28,12 +31,15 @@ export default function Paradas() {
   const [ubicacion, setUbicacion] = useState<Coordenadas | null>(null);
   const [busqueda, setBusqueda] = useState('');
   const [seleccionada, setSeleccionada] = useState<string | null>(null);
+  const [buscandoUbicacion, setBuscandoUbicacion] = useState(false);
+  const [falloUbicacion, setFalloUbicacion] = useState(false);
+  const [intentoUbicacion, setIntentoUbicacion] = useState(0);
 
   const conPermiso = estados.ubicacion === 'concedido';
 
   const cargar = (vivo: () => boolean) =>
   (async () => {
-    const [rParadas, rLineas] = await Promise.all([listarParadasReales(), listarLineasReales()]);
+    const [rParadas, rLineas] = await Promise.all([buscarParadas(''), listarLineasRed()]);
     if (!vivo()) return;
     if ('error' in rParadas) { setError(rParadas.error); setCargando(false); return; }
     if ('error' in rLineas) { setError(rLineas.error); setCargando(false); return; }
@@ -55,18 +61,26 @@ export default function Paradas() {
     if (estados.ubicacion !== 'concedido') return;
     let vivo = true;
     (async () => {
+      setBuscandoUbicacion(true);
+      setFalloUbicacion(false);
       try {
+        // La última posición conocida llega al instante; después se pide la actual, más precisa.
+        const ultima = await Location.getLastKnownPositionAsync();
+        if (vivo && ultima) setUbicacion({ latitud: ultima.coords.latitude, longitud: ultima.coords.longitude });
         const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
         if (!vivo) return;
         setUbicacion({ latitud: loc.coords.latitude, longitud: loc.coords.longitude });
       } catch {
-        
+        // GPS apagado o sin señal: la lista sigue ordenada por nombre.
+        if (vivo) setFalloUbicacion(true);
+      } finally {
+        if (vivo) setBuscandoUbicacion(false);
       }
     })();
     return () => {
       vivo = false;
     };
-  }, [estados.ubicacion]);
+  }, [estados.ubicacion, intentoUbicacion]);
 
   const pedirUbicacion = async () => {
     const est = await pedir('ubicacion');
@@ -107,6 +121,7 @@ export default function Paradas() {
       <MapaParadas
         paradas={filtradas}
         conUbicacion={conPermiso}
+        centro={ubicacion}
         seleccionada={seleccionada}
         onSeleccionar={seleccionar}
       />
@@ -117,6 +132,17 @@ export default function Paradas() {
             ? 'Ordenadas por distancia a tu ubicación'
             : 'Sin permiso de ubicación se listan por nombre'
         }>
+        {buscandoUbicacion && !ubicacion && <Cargando texto="Buscando tu ubicación" />}
+        {falloUbicacion && !ubicacion && (
+          <>
+            <Notificacion
+              tipo="info"
+              titulo="No encontramos tu ubicación"
+              mensaje="Revisa que la ubicación del teléfono esté activada. Mientras tanto, la lista se ordena por nombre."
+            />
+            <Boton texto="Intentar de nuevo" variante="texto" icono="refresh" onPress={() => setIntentoUbicacion((n) => n + 1)} />
+          </>
+        )}
         {estados.ubicacion === 'sin-determinar' && (
           <Boton
             texto="Usar mi ubicación"
@@ -151,7 +177,12 @@ export default function Paradas() {
           <ErrorReintentar error={error} onReintentar={() => { setCargando(true); cargar(() => true); }} />
         ) : filtradas.length ? (
           filtradas.map((p) => (
-            <TarjetaParada key={p.id} parada={p} seleccionada={seleccionada === p.id} />
+            <TarjetaParada
+              key={p.id}
+              parada={p}
+              seleccionada={seleccionada === p.id}
+              onPress={() => router.push({ pathname: '/parada/[id]', params: { id: p.id } })}
+            />
           ))
         ) : (
           <EstadoVacio
