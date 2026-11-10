@@ -63,7 +63,7 @@ export function Desbloqueo() {
   return (
     <Pantalla>
       <View style={e.marca}>
-        <Logo tamano="grande" conPalabra apilado />
+        <Logo tamano="grande" />
       </View>
       <Seccion
         titulo="Sesión bloqueada"

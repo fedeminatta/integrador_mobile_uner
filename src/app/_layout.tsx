@@ -7,6 +7,7 @@ import {
 } from '@expo-google-fonts/rubik';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { LogBox } from 'react-native';
 
 import { NavegacionCajon } from '@/componentes/Navegacion/NavegacionCajon';
 import { RaizApp } from '@/componentes/Navegacion/RaizApp';
@@ -14,6 +15,9 @@ import { RaizApp } from '@/componentes/Navegacion/RaizApp';
 import { diagnosticoDb } from '../db';
 
 SplashScreen.preventAutoHideAsync();
+
+// Expo Go avisa que no soporta notificaciones push; la app usa solo notificaciones locales.
+LogBox.ignoreLogs(['expo-notifications', 'Push notifications (remote notifications)']);
 
 export default function Layout() {
 	const [fuentesListas, errorFuentes] = useFonts({
