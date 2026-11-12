@@ -3,13 +3,19 @@ import {
 	SQL_DATOS_INICIALES_V1,
 	SQL_INDICES_V1,
 	SQL_TABLAS_V1,
+	SQL_TABLAS_V2,
 } from './esquema';
 
 const MIGRACIONES: Array<(db: SQLiteDatabase) => Promise<void>> = [
+	// v1
 	async (db) => {
 		await db.execAsync(SQL_TABLAS_V1);
 		await db.execAsync(SQL_INDICES_V1);
 		await db.execAsync(SQL_DATOS_INICIALES_V1);
+	},
+	// v2: feriados, paradas.lineaIds, cola de reportes
+	async (db) => {
+		await db.execAsync(SQL_TABLAS_V2);
 	},
 ];
 

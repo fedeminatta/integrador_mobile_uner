@@ -131,3 +131,14 @@ INSERT INTO motivos_demora (id, etiqueta) VALUES
   ('unidad_rota',  'Unidad rota'),
   ('calle_cortada','Calle cortada');
 `;
+
+export const SQL_TABLAS_V2 = `
+CREATE TABLE feriados (
+  fecha  TEXT PRIMARY KEY NOT NULL, -- "AAAA-MM-DD"
+  nombre TEXT NOT NULL DEFAULT ''
+);
+ 
+ALTER TABLE paradas ADD COLUMN lineaIds TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE reportes ADD COLUMN intentos INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE reportes ADD COLUMN ultimoError TEXT;
+`;
