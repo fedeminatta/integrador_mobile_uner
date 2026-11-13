@@ -109,7 +109,7 @@ export const avisosRedMock: Aviso[] = [
     hasta: enDias(10),
     gravedad: 'desvio',
     trazadoAlternativo: [punto(-31.7385, -60.5196), punto(-31.7341, -60.5262), punto(-31.7298, -60.5322)],
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    videoUrl: 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4',
   },
   {
     id: 'avi-089',
