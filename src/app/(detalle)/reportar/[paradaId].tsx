@@ -10,6 +10,7 @@ import { FilaOpcion } from '@/componentes/Filas/Filas';
 import { Notificacion } from '@/componentes/Notificacion/Notificacion';
 import { Pantalla, Seccion } from '@/componentes/Pantalla/Pantalla';
 import { Segmentos } from '@/componentes/Red/Red';
+import { SelectorFoto } from '@/componentes/SelectorFoto/SelectorFoto';
 import { Tarjeta } from '@/componentes/Tarjeta/Tarjeta';
 import { useCarga } from '@/hooks/useCarga';
 import { useHaptica } from '@/hooks/useHaptica';
@@ -32,6 +33,7 @@ export default function ReportarDemora() {
 	const [lineaElegida, setLinea] = useState<string | null>(null);
 	const [motivo, setMotivo] = useState<MotivoDemora | null>(null);
 	const [comentario, setComentario] = useState('');
+	const [fotoUri, setFotoUri] = useState<string | null>(null);
 	const [enviando, setEnviando] = useState(false);
 	const [error, setError] = useState<ErrorApi | null>(null);
 	const [enviado, setEnviado] = useState<{ sincronizado: boolean } | null>(
@@ -41,7 +43,6 @@ export default function ReportarDemora() {
 	const lineasDeParada = (lineas.datos ?? []).filter((l) =>
 		parada.datos?.lineaIds.includes(l.id),
 	);
-	// Si por la parada pasa una sola línea, ya queda elegida.
 	const lineaId =
 		lineaElegida ?? (lineasDeParada.length === 1 ? lineasDeParada[0].id : null);
 
@@ -50,7 +51,13 @@ export default function ReportarDemora() {
 		setEnviando(true);
 		setError(null);
 		const r = await enviarReporte(
-			{ lineaId, paradaId, motivo, comentario: comentario.trim() || null },
+			{
+				lineaId,
+				paradaId,
+				motivo,
+				comentario: comentario.trim() || null,
+				fotoUri,
+			},
 			usuario,
 		);
 		setEnviando(false);
@@ -59,7 +66,6 @@ export default function ReportarDemora() {
 			setError(r.error);
 			return;
 		}
-		// Vibración de confirmación: el reporte llegó (o quedó guardado para enviarse solo).
 		haptica.exito();
 		setEnviado({ sincronizado: r.datos.sincronizado });
 	};
@@ -155,7 +161,13 @@ export default function ReportarDemora() {
 							onCambiar={setComentario}
 							placeholder='Por ejemplo: el de las 10:42 no pasó'
 						/>
-						{/* Sacar foto o elegirla de la galería (expo-camera / expo-image-picker) va acá. */}
+					</Seccion>
+
+					<Seccion
+						titulo='Foto'
+						descripcion='Opcional — ayuda a confirmar la demora'
+					>
+						<SelectorFoto uri={fotoUri} onCambiar={setFotoUri} />
 					</Seccion>
 
 					{error && (

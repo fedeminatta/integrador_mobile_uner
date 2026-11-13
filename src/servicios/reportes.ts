@@ -25,6 +25,7 @@ export type NuevoReporte = {
 	paradaId: string;
 	motivo: MotivoDemora;
 	comentario: string | null;
+	fotoUri?: string | null;
 };
 
 const sinSesion = () =>

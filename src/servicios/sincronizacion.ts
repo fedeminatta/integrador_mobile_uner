@@ -9,6 +9,7 @@ import { guardarHorariosDeLinea } from '@/db/repositorios/horarios';
 import { guardarLineas, guardarRecorridos } from '@/db/repositorios/lineas';
 import { guardarParadas } from '@/db/repositorios/paradas';
 import { ErrorDeApi, pedir } from '@/servicios/api';
+import { API_URL } from '@/servicios/config';
 import {
 	listarFeriados,
 	listarLineasRed,
@@ -18,11 +19,6 @@ import {
 
 let sincronizando = false;
 
-/**
- * Baja el catálogo completo (líneas, paradas, recorridos, horarios y feriados) y lo guarda
- * en SQLite, para que la app abra y muestre algo aunque no haya conexión.
- * Se llama al iniciar la app y cada vez que vuelve la conexión (ver hooks/useRed.ts).
- */
 export async function sincronizarCatalogo(): Promise<{
 	ok: boolean;
 	motivo?: string;
@@ -39,14 +35,12 @@ export async function sincronizarCatalogo(): Promise<{
 			return { ok: false, motivo: rParadas.error.mensaje };
 		await guardarParadas(rParadas.datos);
 
-		// Los recorridos van después de las paradas: recorrido_paradas tiene FK a paradas.
 		await guardarRecorridos(rLineas.datos);
 
 		for (const linea of rLineas.datos) {
 			const rHorarios = await todosLosHorariosDeLinea(linea.id);
 			if (!('error' in rHorarios))
 				await guardarHorariosDeLinea(linea.id, rHorarios.datos);
-			// Si falla una línea puntual, seguimos con las demás: mejor catálogo parcial que nada.
 		}
 
 		const rFeriados = await listarFeriados();
@@ -64,14 +58,50 @@ export async function sincronizarCatalogo(): Promise<{
 	}
 }
 
+/**
+ * Sube una foto local al servidor y devuelve la URL remota.
+ * El flujo del PRD pide subir primero la foto (POST /archivos) y después el reporte.
+ */
+async function subirFoto(uri: string, token: string): Promise<string> {
+	const formulario = new FormData();
+	// React Native acepta un objeto con uri, name y type donde va el archivo.
+	formulario.append('archivo', {
+		uri,
+		name: 'foto.jpg',
+		type: 'image/jpeg',
+	} as any);
+
+	const r = await fetch(`${API_URL}/archivos`, {
+		method: 'POST',
+		headers: { Authorization: `Bearer ${token}` },
+		body: formulario,
+	});
+	if (!r.ok) {
+		const json = await r.json().catch(() => ({}));
+		throw new ErrorDeApi(
+			json?.error?.codigo ?? 'ERROR_SUBIDA',
+			json?.error?.mensaje ?? 'No se pudo subir la foto.',
+			r.status,
+		);
+	}
+	const json = await r.json();
+	return json.datos.url as string;
+}
+
 /** Reintenta enviar los reportes que quedaron pendientes por falta de conexión. */
 export async function sincronizarReportesPendientes(): Promise<void> {
 	const token = await leerToken();
-	if (!token) return; // sin sesión no se puede reenviar
+	if (!token) return;
 
 	const pendientes = await listarReportesPendientes();
 	for (const r of pendientes) {
 		try {
+			// Si el reporte tiene foto local (file://), subirla primero y reemplazar la URI.
+			let fotoUrl = r.fotoUri;
+			if (fotoUrl?.startsWith('file://')) {
+				fotoUrl = await subirFoto(fotoUrl, token);
+			}
+
 			await pedir('/reportes-demora', {
 				metodo: 'POST',
 				token,
@@ -80,7 +110,7 @@ export async function sincronizarReportesPendientes(): Promise<void> {
 					paradaId: r.paradaId,
 					motivo: r.motivo,
 					comentario: r.comentario,
-					fotoUri: r.fotoUri,
+					fotoUri: fotoUrl,
 					fechaHora: r.fechaHora,
 				},
 			});
@@ -88,10 +118,18 @@ export async function sincronizarReportesPendientes(): Promise<void> {
 		} catch (e) {
 			if (e instanceof ErrorDeApi) {
 				await registrarErrorEnvio(r.id, e.message);
-				// Seguimos sin señal: no tiene sentido insistir con el resto ahora.
 				if (e.codigo === 'SIN_CONEXION') break;
+				// Errores definitivos (ya enviado, validación): se descartan sin reintentar.
+				if (
+					[
+						'REPORTE_YA_ENVIADO',
+						'VALIDACION_FALLIDA',
+						'LINEA_NO_PARA_EN_PARADA',
+					].includes(e.codigo)
+				) {
+					await eliminarReportePendiente(r.id);
+				}
 			}
-			// Si no es un ErrorDeApi (algo inesperado), se deja para el próximo intento.
 		}
 	}
 }
