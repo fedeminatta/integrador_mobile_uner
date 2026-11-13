@@ -13,9 +13,7 @@ import { useHaptica } from '@/hooks/useHaptica';
 import { usePermisos } from '@/hooks/usePermisos';
 import { paradaPorQr } from '@/servicios/paradasApi';
 import { Parada } from '@/tipos/types';
-
-// Formato del QR de parada 
-const FORMATO_QR = /^PARANA:par-[\w-]+$/;
+import { esQrDeParadaValido } from '@/utils/validaciones';
 
 const estilos = StyleSheet.create({
   contenedor: { flex: 1, backgroundColor: '#000' },
@@ -48,11 +46,11 @@ export default function Escanear() {
   const [avisos, setAvisos] = useState<{ tipo: 'aviso' | 'error'; titulo: string; mensaje?: string } | null>(null);
   const [parada, setParada] = useState<Parada | null>(null);
   const [cargando, setCargando] = useState(false);
-  const escaneandoRef = useRef(false); 
+  const escaneandoRef = useRef(false);
 
   const manejarEscaneo = async (r: { data: string }) => {
     if (escaneandoRef.current) return;
-    if (!FORMATO_QR.test(r.data)) {
+    if (!esQrDeParadaValido(r.data)) {
       haptica.error?.();
       setAvisos({ tipo: 'aviso', titulo: 'Ese QR no es de una parada', mensaje: 'Escaneá el QR de la parada de Paraná.' });
       return;
@@ -64,11 +62,11 @@ export default function Escanear() {
     if ('error' in res) {
       haptica.error?.();
       setAvisos({ tipo: 'error', titulo: 'No pudimos buscar la parada', mensaje: res.error.mensaje });
-      escaneandoRef.current = false; // deja escanear de nuevo
+      escaneandoRef.current = false;
       return;
     }
     haptica.exito?.();
-    setParada(res.datos); // abre el diálogo; escaneandoRef queda en true hasta "Escanear otro"
+    setParada(res.datos);
   };
 
   const escanearOtro = () => { setParada(null); setAvisos(null); escaneandoRef.current = false; };
@@ -132,7 +130,14 @@ export default function Escanear() {
         onCerrar={escanearOtro}
         acciones={[
           { texto: 'Escanear otro', variante: 'secundario', onPress: escanearOtro },
-          { texto: 'Cerrar', onPress: () => router.back() },
+          {
+            texto: 'Ver parada',
+            onPress: () => {
+              const id = parada?.id;
+              escanearOtro();
+              if (id) router.replace(`/parada/${id}`);
+            },
+          },
         ]}
       >
         {parada && (

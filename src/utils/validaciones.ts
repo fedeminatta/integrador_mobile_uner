@@ -3,55 +3,45 @@
 export function validarCorreo(correo: string): string | null {
   const limpio = correo.trim();
   if (!limpio) return 'Escribe tu correo.';
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(limpio)) return 'El correo no tiene un formato válido, por ejemplo nombre@correo.com.';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(limpio)) {
+    return 'El correo no tiene un formato válido, por ejemplo nombre@correo.com.';
+  }
   return null;
 }
 
-export const LARGO_MINIMO_CONTRASENA = 8;
+export const LARGO_MINIMO_CONTRASENA = 6;
 
 export function validarContrasenaNueva(contrasena: string): string | null {
   if (!contrasena) return 'Elige una contraseña.';
-  if (contrasena.length < LARGO_MINIMO_CONTRASENA) return `Usa al menos ${LARGO_MINIMO_CONTRASENA} caracteres.`;
+  if (contrasena.length < LARGO_MINIMO_CONTRASENA) {
+    return `Usa al menos ${LARGO_MINIMO_CONTRASENA} caracteres.`;
+  }
   return null;
 }
 
 export function validarNombre(nombre: string): string | null {
   return nombre.trim() ? null : 'Escribe tu nombre.';
 }
+
 /**
- * Valida si la cadena obtenida por la cámara corresponde a un QR válido de parada.
- * Formato esperado: "PARANA-PARADA-<id>" o un objeto JSON con id de parada.
+ * Valida si la cadena leída por la cámara corresponde al QR oficial de parada ("PARANA:par-xxx").
  */
-export function obtenerParadaIdDeQR(codigoQr: string): string | null {
-  if (!codigoQr) return null;
-  
-  const limpio = codigoQr.trim();
-  
-  // String directo "PARANA-PARADA-par-101" o "par-101"
-  if (limpio.startsWith('PARANA-PARADA-')) {
-    return limpio.replace('PARANA-PARADA-', '');
-  }
-  
-  // El QR contiene un JSON, ej: {"paradaId": "par-101"}
-  try {
-    const parseado = JSON.parse(limpio);
-    if (parseado && typeof parseado.paradaId === 'string') {
-      return parseado.paradaId;
-    }
-  } catch {
-    // No es JSON, continuar
-  }
-
-  // Si directamente viene el ID (ej "par-101")
-  if (/^par-\d+$/.test(limpio)) {
-    return limpio;
-  }
-
-  return null;
+export function esQrDeParadaValido(codigoQr: string): boolean {
+  if (!codigoQr) return false;
+  return /^PARANA:par-[\w-]+$/.test(codigoQr.trim());
 }
 
 /**
- * Verifica si un aviso está activo en la fecha actual.
+ * Extrae el ID de parada ("par-xxx") desde un QR válido, o null si es inválido.
+ */
+export function obtenerParadaIdDeQR(codigoQr: string): string | null {
+  const limpio = codigoQr.trim();
+  if (!esQrDeParadaValido(limpio)) return null;
+  return limpio.replace('PARANA:', '');
+}
+
+/**
+ * Verifica si un aviso está vigente en el momento indicado.
  */
 export function esAvisoVigente(
   desdeIso: string,
@@ -60,10 +50,7 @@ export function esAvisoVigente(
 ): boolean {
   const inicio = new Date(desdeIso).getTime();
   const actual = ahora.getTime();
-
   if (actual < inicio) return false;
-  if (!hastaIso) return true; // Si no tiene fin, sigue vigente
-
-  const fin = new Date(hastaIso).getTime();
-  return actual <= fin;
+  if (!hastaIso) return true;
+  return actual <= new Date(hastaIso).getTime();
 }

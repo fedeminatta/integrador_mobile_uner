@@ -62,7 +62,7 @@ export async function sincronizarCatalogo(): Promise<{
  * Sube una foto local al servidor y devuelve la URL remota.
  * El flujo del PRD pide subir primero la foto (POST /archivos) y después el reporte.
  */
-async function subirFoto(uri: string, token: string): Promise<string> {
+ export async function subirFoto(uri: string, token: string): Promise<string> {
 	const formulario = new FormData();
 	// React Native acepta un objeto con uri, name y type donde va el archivo.
 	formulario.append('archivo', {
