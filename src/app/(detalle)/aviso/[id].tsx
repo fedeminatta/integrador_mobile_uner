@@ -1,4 +1,5 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { useCallback } from 'react';
 import { View } from 'react-native';
 
@@ -23,6 +24,11 @@ export default function DetalleAviso() {
 
   const afectadas = (lineas.datos ?? []).filter((l) => aviso.datos?.lineaIds.includes(l.id));
 
+  const urlVideo = aviso.datos?.videoUrl ?? null;
+  const player = useVideoPlayer(urlVideo, (p) => {
+    p.loop = false;
+  });
+
   return (
     <Pantalla>
       <Stack.Screen options={{ title: 'Aviso' }} />
@@ -43,7 +49,18 @@ export default function DetalleAviso() {
               <Texto>{aviso.datos.detalle}</Texto>
             </Tarjeta>
 
-            {/* El video del desvío (expo-video, con controles a la vista) va en esta sección cuando aviso.videoUrl no es null. */}
+            {urlVideo && (
+              <Seccion titulo="Video del desvío">
+                <VideoView
+                player={player}
+                style={{ width: '100%', aspectRatio: 16 / 9 }}
+                contentFit="contain"
+                nativeControls
+                fullscreenOptions={{ enable: true }}
+              />
+              </Seccion>
+            )}
+
             {aviso.datos.trazadoAlternativo && (
               <Seccion titulo="Por dónde pasa ahora" descripcion="Punteado: recorrido del desvío. Línea llena: recorrido habitual.">
                 <MapaRecorrido
