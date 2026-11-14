@@ -1,3 +1,4 @@
+// src/servicios/sincronizacion.ts
 import { leerToken } from '@/db/almacen-seguro';
 import {
 	eliminarReportePendiente,
@@ -63,15 +64,17 @@ export async function sincronizarCatalogo(): Promise<{
  * El flujo del PRD pide subir primero la foto (POST /archivos) y después el reporte.
  */
 async function subirFoto(uri: string, token: string): Promise<string> {
-	const formulario = new FormData();
-	// React Native acepta un objeto con uri, name y type donde va el archivo.
-	formulario.append('archivo', {
-		uri,
-		name: 'foto.jpg',
-		type: 'image/jpeg',
-	} as any);
+	// expo/fetch + File de expo-file-system: única forma compatible con el FormData de Expo SDK 57.
+	const { fetch: expoFetch } = await import('expo/fetch');
+	const { File } = await import('expo-file-system');
 
-	const r = await fetch(`${API_URL}/archivos`, {
+	const archivo = new File(uri) as any;
+	archivo.name = 'foto.jpg';
+	archivo.type = 'image/jpeg';
+	const formulario = new FormData();
+	formulario.append('archivo', archivo);
+
+	const r = await expoFetch(`${API_URL}/archivos`, {
 		method: 'POST',
 		headers: { Authorization: `Bearer ${token}` },
 		body: formulario,
@@ -79,13 +82,13 @@ async function subirFoto(uri: string, token: string): Promise<string> {
 	if (!r.ok) {
 		const json = await r.json().catch(() => ({}));
 		throw new ErrorDeApi(
-			json?.error?.codigo ?? 'ERROR_SUBIDA',
-			json?.error?.mensaje ?? 'No se pudo subir la foto.',
+			(json as any)?.error?.codigo ?? 'ERROR_SUBIDA',
+			(json as any)?.error?.mensaje ?? 'No se pudo subir la foto.',
 			r.status,
 		);
 	}
 	const json = await r.json();
-	return json.datos.url as string;
+	return (json as any).datos.url as string;
 }
 
 /** Reintenta enviar los reportes que quedaron pendientes por falta de conexión. */

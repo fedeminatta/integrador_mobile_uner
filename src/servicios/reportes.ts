@@ -86,10 +86,41 @@ export async function enviarReporte(
 	}
 
 	try {
+		// Si hay foto local (file://), subirla primero y usar la URL remota.
+		// expo/fetch + File de expo-file-system: única forma que funciona con el FormData de Expo SDK 57.
+		let fotoUrl: string | null = nuevo.fotoUri ?? null;
+		if (fotoUrl?.startsWith('file://')) {
+			try {
+				const { fetch: expoFetch } = await import('expo/fetch');
+				const { File } = await import('expo-file-system');
+				const { API_URL } = await import('@/servicios/config');
+
+				const archivo = new File(fotoUrl);
+				const formulario = new FormData();
+				formulario.append('archivo', archivo as any);
+
+				const res = await expoFetch(`${API_URL}/archivos`, {
+					method: 'POST',
+					headers: { Authorization: `Bearer ${token}` },
+					body: formulario,
+				});
+				if (res.ok) {
+					const json = await res.json();
+					fotoUrl = (json as any).datos.url as string;
+				} else {
+					console.log('Error subida foto:', res.status);
+					fotoUrl = null;
+				}
+			} catch (e) {
+				// Si la subida falla, el reporte se manda igual sin foto.
+				console.log('Excepción subida foto:', e);
+				fotoUrl = null;
+			}
+		}
 		const r = await pedir<ReporteDeDemora>('/reportes-demora', {
 			metodo: 'POST',
 			token,
-			cuerpo: { ...nuevo, fotoUri: null, fechaHora },
+			cuerpo: { ...nuevo, fotoUri: fotoUrl, fechaHora },
 		});
 		return { datos: r.datos, meta: { generadoEn: fechaHora, total: null } };
 	} catch (e) {
