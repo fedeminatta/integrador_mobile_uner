@@ -20,7 +20,6 @@ App móvil para los pasajeros de colectivos de Paraná: líneas y recorridos de 
 - Cristian Mateo Acuña
 - Joaquín Arce
 - Federico Minatta
-- Vanesa Moreno
 - Virginia Alejandra Ponce
 
 ---
@@ -29,7 +28,7 @@ App móvil para los pasajeros de colectivos de Paraná: líneas y recorridos de 
 
 |                             |                                                                                |
 | --------------------------- | ------------------------------------------------------------------------------ |
-| **APK para Android**        | _Link de descarga: se agrega cuando esté el build de EAS._                     |
+| **APK para Android**        | [Link de descarga](https://expo.dev/artifacts/eas/Gj7_3IfOR9RjVpTVDzBZMDOYfXfHvK01UztHs0AgQJk.apk) |
 | **API publicada**           | [paran-api-7n36.onrender.com/salud](https://paran-api-7n36.onrender.com/salud) |
 | **Documentación de la API** | [paran-api-7n36.onrender.com/docs](https://paran-api-7n36.onrender.com/docs)   |
 | **Usuario de prueba**       | `julian@mail.com` — contraseña `demo1234`                                      |
@@ -55,7 +54,7 @@ Para abrirla desde el código con Expo Go (SDK 57): `npm install`, `npx expo sta
 | Lenguaje   | TypeScript                                    |
 | Navegación | Expo Router                                   |
 | Datos      | API de la cátedra, `expo-sqlite` y `kv-store` |
-| Mapas      | `react-native-maps` + `expo-location`         |
+| Mapas      | `@maplibre/maplibre-react-native` + `expo-location` |
 
 ## Instalación
 
@@ -118,8 +117,6 @@ npx eas-cli build --platform android --profile preview
 ```
 
 Al terminar, EAS muestra un link para descargar e instalar el APK. El cupo mensual de builds gratuitos es limitado: hacer el build solo cuando haga falta.
-
-Para usar la clave de Google Maps en un development build local, agregar `GOOGLE_MAPS_API_KEY=<clave>` en `.env.local`.
 
 ## Configurar la API
 
