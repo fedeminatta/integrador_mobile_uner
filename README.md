@@ -28,7 +28,7 @@ App móvil para los pasajeros de colectivos de Paraná: líneas y recorridos de 
 
 |                             |                                                                                |
 | --------------------------- | ------------------------------------------------------------------------------ |
-| **APK para Android**        | _Link de descarga: se agrega cuando esté el build de EAS._                     |
+| **APK para Android**        | [Link de descarga](https://expo.dev/artifacts/eas/Gj7_3IfOR9RjVpTVDzBZMDOYfXfHvK01UztHs0AgQJk.apk) |
 | **API publicada**           | [paran-api-7n36.onrender.com/salud](https://paran-api-7n36.onrender.com/salud) |
 | **Documentación de la API** | [paran-api-7n36.onrender.com/docs](https://paran-api-7n36.onrender.com/docs)   |
 | **Usuario de prueba**       | `julian@mail.com` — contraseña `demo1234`                                      |
