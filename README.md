@@ -20,7 +20,6 @@ App móvil para los pasajeros de colectivos de Paraná: líneas y recorridos de 
 - Cristian Mateo Acuña
 - Joaquín Arce
 - Federico Minatta
-- Vanesa Moreno
 - Virginia Alejandra Ponce
 
 ---
@@ -55,7 +54,7 @@ Para abrirla desde el código con Expo Go (SDK 57): `npm install`, `npx expo sta
 | Lenguaje   | TypeScript                                    |
 | Navegación | Expo Router                                   |
 | Datos      | API de la cátedra, `expo-sqlite` y `kv-store` |
-| Mapas      | `react-native-maps` + `expo-location`         |
+| Mapas      | `@maplibre/maplibre-react-native` + `expo-location` |
 
 ## Instalación
 
@@ -118,8 +117,6 @@ npx eas-cli build --platform android --profile preview
 ```
 
 Al terminar, EAS muestra un link para descargar e instalar el APK. El cupo mensual de builds gratuitos es limitado: hacer el build solo cuando haga falta.
-
-Para usar la clave de Google Maps en un development build local, agregar `GOOGLE_MAPS_API_KEY=<clave>` en `.env.local`.
 
 ## Configurar la API
 
